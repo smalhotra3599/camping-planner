@@ -302,6 +302,11 @@
         font-weight: bold;
       }
 
+      .rsvp-table th:nth-child(4) {
+        text-align: center;
+        width: 100px;
+      }
+
       .rsvp-table td {
         padding: 12px 15px;
         border-bottom: 1px solid #e0e0e0;
@@ -1199,6 +1204,9 @@
               <span class="stat unsure"
                 >Still deciding: <strong id="unsureCount">0</strong></span
               >
+              <span class="stat" style="background: #e8f4f8; color: #1a5b69"
+                >Plus Ones: <strong id="plusOneCount">0</strong></span
+              >
             </div>
           </div>
 
@@ -1209,6 +1217,7 @@
                   <th>Name</th>
                   <th>Email</th>
                   <th>Status</th>
+                  <th>Plus One</th>
                   <th>Notes</th>
                 </tr>
               </thead>
@@ -1269,6 +1278,16 @@
                 placeholder="Any comments, dietary restrictions, or special requests?"
                 rows="3"
               ></textarea>
+
+              <div style="margin: 15px 0">
+                <label style="display: flex; align-items: center; gap: 8px">
+                  <input type="checkbox" id="editPlusOne" />
+                  <span style="font-weight: bold">Bringing a Plus One</span>
+                </label>
+                <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 24px">
+                  Check this if you're bringing someone with you
+                </p>
+              </div>
 
               <div class="modal-buttons">
                 <button type="submit" class="btn">Update RSVP</button>
@@ -1670,6 +1689,7 @@
           email,
           status: "unsure", // Default status
           comment: "",
+          plusOne: false, // Default to no plus one, can be updated later
           timestamp: new Date(),
         };
 
@@ -1697,6 +1717,7 @@
         const email = document.getElementById("editEmail").value;
         const name = document.getElementById("editingName").textContent;
         const comment = document.getElementById("editComment").value;
+        const plusOne = document.getElementById("editPlusOne").checked;
 
         try {
           // Get existing RSVP data
@@ -1708,6 +1729,7 @@
               ...existingRsvp,
               status: selectedStatus,
               comment,
+              plusOne,
               timestamp: new Date(),
             };
 
@@ -1843,16 +1865,19 @@
         const maybeCount = document.getElementById("maybeCount");
         const notForMeCount = document.getElementById("notForMeCount");
         const unsureCount = document.getElementById("unsureCount");
+        const plusOneCount = document.getElementById("plusOneCount");
 
         const definitely = rsvps.filter((r) => r.status === "definitely");
         const maybe = rsvps.filter((r) => r.status === "maybe");
         const notForMe = rsvps.filter((r) => r.status === "not-for-me");
         const unsure = rsvps.filter((r) => r.status === "unsure");
+        const plusOnes = rsvps.filter((r) => r.plusOne);
 
         definitelyCount.textContent = definitely.length;
         maybeCount.textContent = maybe.length;
         notForMeCount.textContent = notForMe.length;
         unsureCount.textContent = unsure.length;
+        plusOneCount.textContent = plusOnes.length;
       }
 
       function displayRSVPTable(rsvps) {
@@ -1867,11 +1892,13 @@
 
         tbody.innerHTML = rsvps
           .map((rsvp) => {
+            const plusOneDisplay = rsvp.plusOne ? "✅ Yes" : "❌ No";
             return `
               <tr class="rsvp-row" 
                   data-email="${rsvp.email}" 
                   data-name="${rsvp.name}" 
                   data-status="${rsvp.status}" 
+                  data-plusone="${rsvp.plusOne || false}"
                   data-comment="${(rsvp.comment || "").replace(
                     /"/g,
                     "&quot;"
@@ -1883,6 +1910,7 @@
                     ${statusText[rsvp.status] || rsvp.status}
                   </span>
                 </td>
+                <td style="text-align: center;">${plusOneDisplay}</td>
                 <td>${rsvp.comment || "<em>No notes</em>"}</td>
               </tr>
             `;
@@ -1901,21 +1929,23 @@
               const email = row.dataset.email;
               const name = row.dataset.name;
               const status = row.dataset.status;
+              const plusOne = row.dataset.plusone;
               const comment = row.dataset.comment.replace(/&quot;/g, '"');
 
-              openEditModal(email, name, status, comment);
+              openEditModal(email, name, status, comment, plusOne);
             }
           });
         }
       }
 
       // Modal functions
-      function openEditModal(email, name, status, comment) {
+      function openEditModal(email, name, status, comment, plusOne) {
         editingEmail = email;
 
         document.getElementById("editEmail").value = email;
         document.getElementById("editingName").textContent = name;
         document.getElementById("editComment").value = comment || "";
+        document.getElementById("editPlusOne").checked = plusOne === "true";
 
         // Reset all options first
         const rsvpOptions = document.querySelectorAll(".rsvp-option");
@@ -1941,6 +1971,7 @@
         selectedStatus = null;
         const rsvpOptions = document.querySelectorAll(".rsvp-option");
         rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+        document.getElementById("editPlusOne").checked = false;
         editForm.reset();
       }
 
