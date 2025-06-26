@@ -1,88 +1,1716 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camp Together - Plan Your Next Adventure</title>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/11.9.1/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/11.9.1/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/11.9.1/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --forest-green: #2d5a3d;
+        --sage-green: #87a878;
+        --warm-brown: #8b6f47;
+        --sunset-orange: #ff6b35;
+        --cream: #fef9ef;
+        --dark-text: #2c3e50;
+        --light-gray: #f8f9fa;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--dark-text);
+        background-color: var(--cream);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.9),
+          rgba(255, 107, 53, 0.8)
+        );
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "🏕️";
+        position: absolute;
+        font-size: 300px;
+        opacity: 0.1;
+        top: -50px;
+        right: -50px;
+        transform: rotate(-15deg);
+      }
+
+      .hero h1 {
+        font-size: 3.5em;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 1s ease-out;
+      }
+
+      .hero-quote {
+        font-size: 1.4em;
+        font-style: italic;
+        margin-bottom: 30px;
+        opacity: 0.95;
+        animation: fadeInUp 1s ease-out 0.3s both;
+      }
+
+      .activities {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 40px;
+        animation: fadeInUp 1s ease-out 0.6s both;
+      }
+
+      .activity-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 10px 20px;
+        border-radius: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .activity-badge:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      /* Section Styles */
+      .section {
+        padding: 60px 0;
+        animation: fadeIn 0.8s ease-out;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5em;
+        color: var(--forest-green);
+        margin-bottom: 40px;
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: var(--sunset-orange);
+      }
+
+      /* RSVP Section */
+      .rsvp-section {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
+      }
+
+      .rsvp-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .rsvp-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .rsvp-option {
+        padding: 15px;
+        border: 2px solid var(--sage-green);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .rsvp-option:hover {
+        background: var(--sage-green);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .rsvp-option.selected {
+        background: var(--forest-green);
+        color: white;
+        border-color: var(--forest-green);
+      }
+
+      .form-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .form-row input {
+        flex: 1;
+        min-width: 0; /* Ensures inputs can shrink equally */
+      }
+
+      .form-row input[type="text"],
+      .form-row input[type="email"] {
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-row input[type="text"]:focus,
+      .form-row input[type="email"]:focus {
+        outline: none;
+        border-color: var(--sage-green);
+      }
+
+      /* General input and textarea styling */
+      input[type="text"],
+      input[type="email"],
+      textarea {
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+        font-family: inherit;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--sage-green);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .btn {
+        background: var(--sunset-orange);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background: #e85a2a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+      }
+
+      .attendees-list {
+        margin-top: 40px;
+        padding: 20px;
+        background: var(--light-gray);
+        border-radius: 10px;
+      }
+
+      .rsvp-summary {
+        margin: 20px 0;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .rsvp-instructions {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--cream);
+        border-radius: 8px;
+        border: 1px solid var(--sage-green);
+      }
+
+      .rsvp-instructions p {
+        margin: 5px 0;
+      }
+
+      .rsvp-table-container {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin: 20px 0;
+      }
+
+      .rsvp-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .rsvp-table th {
+        background: var(--forest-green);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: bold;
+      }
+
+      .rsvp-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .rsvp-table tbody tr {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .rsvp-table tbody tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        font-weight: bold;
+      }
+
+      .status-badge.definitely {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-badge.maybe {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-badge.not-for-me {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .status-badge.unsure {
+        background: #e2e3e5;
+        color: #383d41;
+      }
+
+      .add-new-rsvp {
+        background: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 20px;
+      }
+
+      .add-new-rsvp h4 {
+        margin-bottom: 12px;
+        color: var(--forest-green);
+        font-size: 1.1em;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+      }
+
+      .modal-content {
+        position: relative;
+        background-color: white;
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: modalSlideIn 0.3s ease-out;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-content h3 {
+        color: var(--forest-green);
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .edit-name {
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+        color: var(--warm-brown);
+      }
+
+      .modal-content textarea {
+        width: 100%;
+        margin-bottom: 25px;
+        box-sizing: border-box;
+      }
+
+      .modal-content .rsvp-options {
+        margin-bottom: 20px;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 0;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        text-align: center;
+      }
+
+      .stat {
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 0.9em;
+      }
+
+      .stat.definitely {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .stat.maybe {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .stat.not-for-me {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .stat.unsure {
+        background: #e2e3e5;
+        color: #383d41;
+      }
+
+      .rsvp-list {
+        margin-top: 20px;
+      }
+
+      .attendee {
+        display: block;
+        background: white;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid var(--sage-green);
+      }
+
+      .attendee[data-status="definitely"] {
+        border-left-color: #28a745;
+      }
+
+      .attendee[data-status="maybe"] {
+        border-left-color: #ffc107;
+      }
+
+      .attendee[data-status="not-for-me"] {
+        border-left-color: #dc3545;
+      }
+
+      .attendee[data-status="unsure"] {
+        border-left-color: #6c757d;
+      }
+
+      .attendee-name {
+        font-weight: bold;
+        color: var(--forest-green);
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .attendee-email {
+        color: var(--warm-brown);
+        font-size: 0.9em;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .attendee-comment {
+        color: var(--dark-text);
+        font-style: italic;
+        font-size: 0.9em;
+        display: block;
+      }
+
+      /* Date Coordination */
+      .date-section {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .calendly-placeholder {
+        background: var(--light-gray);
+        padding: 60px;
+        border-radius: 10px;
+        margin: 30px 0;
+        border: 2px dashed var(--sage-green);
+      }
+
+      /* Campsite Voting */
+      .campsite-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .campsite-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .campsite-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .campsite-image {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(
+          135deg,
+          var(--sage-green),
+          var(--forest-green)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4em;
+      }
+
+      .campsite-info {
+        padding: 20px;
+      }
+
+      .campsite-name {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: var(--forest-green);
+        margin-bottom: 10px;
+      }
+
+      .campsite-features {
+        list-style: none;
+        margin: 15px 0;
+      }
+
+      .campsite-features li {
+        padding: 5px 0;
+        position: relative;
+        padding-left: 25px;
+      }
+
+      .campsite-features li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--sage-green);
+        font-weight: bold;
+      }
+
+      .vote-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .vote-count {
+        font-size: 1.2em;
+        color: var(--warm-brown);
+      }
+
+      /* Packing List */
+      .packing-categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .packing-category {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .category-title {
+        font-size: 1.5em;
+        color: var(--forest-green);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .packing-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .packing-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+      }
+
+      .item-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .claimed-by {
+        color: var(--sage-green);
+        font-size: 0.9em;
+        font-style: italic;
+      }
+
+      .add-item-form {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .add-item-form input {
+        flex: 1;
+      }
+
+      /* Additional Features */
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+
+      .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .info-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+      }
+
+      /* Loading States */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--sunset-orange);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.5em;
+        }
+
+        .hero-quote {
+          font-size: 1.1em;
+        }
+
+        .section-title {
+          font-size: 2em;
+        }
+
+        .rsvp-options {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Connection Status */
+      .connection-status {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--forest-green);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .connection-status.offline {
+        background: var(--sunset-orange);
       }
     </style>
   </head>
   <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Camp Together 🏕️</h1>
+        <p class="hero-quote">
+          "The mountains are calling and I must go" - John Muir
+        </p>
+        <p style="font-size: 1.2em; margin-bottom: 30px">
+          Disconnect to reconnect. Plan your perfect outdoor adventure!
+        </p>
+
+        <div class="activities">
+          <div class="activity-badge">🥾 Hiking</div>
+          <div class="activity-badge">⭐ Stargazing</div>
+          <div class="activity-badge">🔥 Campfire Stories</div>
+          <div class="activity-badge">🍫 S'mores</div>
+          <div class="activity-badge">🍺 Drinking</div>
+          <div class="activity-badge">📸 Nature Photography</div>
+          <div class="activity-badge">🎮 Outdoor Games</div>
+          <div class="activity-badge">
+            🦌 Wildlife Spotting (not guaranteed)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RSVP Section -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">RSVP Status 🎉</h2>
+
+        <div class="rsvp-section">
+          <div class="rsvp-instructions">
+            <p><strong>Click on your row to update your RSVP status</strong></p>
+            <p>Don't see your name? Add yourself below!</p>
+          </div>
+
+          <div class="rsvp-summary">
+            <div class="summary-stats">
+              <span class="stat definitely"
+                >Definitely In: <strong id="definitelyCount">0</strong></span
+              >
+              <span class="stat maybe"
+                >If dates work: <strong id="maybeCount">0</strong></span
+              >
+              <span class="stat not-for-me"
+                >Not coming: <strong id="notForMeCount">0</strong></span
+              >
+              <span class="stat unsure"
+                >Still deciding: <strong id="unsureCount">0</strong></span
+              >
+            </div>
+          </div>
+
+          <div class="rsvp-table-container">
+            <table class="rsvp-table" id="rsvpTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="rsvpTableBody">
+                <!-- RSVPs will be populated here -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="add-new-rsvp">
+            <h4>Add New Person</h4>
+            <form class="rsvp-form" id="rsvpForm">
+              <div class="form-row">
+                <input type="text" id="rsvpName" placeholder="Name" required />
+                <input
+                  type="email"
+                  id="rsvpEmail"
+                  placeholder="Email"
+                  required
+                />
+                <button type="submit" class="btn">Add Person</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div class="modal" id="editModal">
+          <div class="modal-content">
+            <h3>Update RSVP Status</h3>
+            <form id="editForm">
+              <input type="hidden" id="editEmail" />
+              <div class="edit-name">
+                <strong id="editingName"></strong>
+              </div>
+
+              <div class="rsvp-options">
+                <div class="rsvp-option" data-status="definitely">
+                  <h4>Definitely In! 🙌</h4>
+                  <p>Count me in!</p>
+                </div>
+                <div class="rsvp-option" data-status="maybe">
+                  <h4>In if the dates work 📅</h4>
+                  <p>I'll come if dates align</p>
+                </div>
+                <div class="rsvp-option" data-status="not-for-me">
+                  <h4>Camping is not for me 🏠</h4>
+                  <p>I'll pass on this one</p>
+                </div>
+                <div class="rsvp-option" data-status="unsure">
+                  <h4>Unsure/Still deciding 🤔</h4>
+                  <p>Let me think about it</p>
+                </div>
+              </div>
+
+              <textarea
+                id="editComment"
+                placeholder="Any comments, dietary restrictions, or special requests?"
+                rows="3"
+              ></textarea>
+
+              <div class="modal-buttons">
+                <button type="submit" class="btn">Update RSVP</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="closeEditModal()"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Date Coordination -->
+    <section class="section" style="background: var(--light-gray)">
+      <div class="container">
+        <h2 class="section-title">Find the Perfect Dates 📅</h2>
+
+        <div class="date-section">
+          <p style="font-size: 1.2em; margin-bottom: 30px">
+            Let's find dates that work for everyone!
+          </p>
+
+          <div class="calendly-placeholder">
+            <h3>📆 Calendly Widget</h3>
+            <p>Schedule coordination tool will be embedded here</p>
+          </div>
+
+          <button
+            class="btn"
+            onclick="window.open('https://calendly.com', '_blank')"
+          >
+            Check Available Dates on Calendly
+          </button>
+
+          <div style="margin-top: 30px">
+            <h3>Proposed Dates:</h3>
+            <p>June 15-17 • July 6-8 • July 20-22</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Campsite Voting -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Vote for Your Favorite Campsite 🗳️</h2>
+
+        <div class="campsite-grid" id="campsiteGrid">
+          <!-- Campsites will be dynamically loaded -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Packing List -->
+    <section class="section" style="background: var(--light-gray)">
+      <div class="container">
+        <h2 class="section-title">Shared Packing List 🎒</h2>
+
+        <div class="packing-categories" id="packingCategories">
+          <!-- Categories will be dynamically loaded -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Additional Info -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Essential Information 📍</h2>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">🌤️</div>
+            <h3>Weather Forecast</h3>
+            <p>Sunny with highs of 75°F</p>
+            <p>Perfect camping weather!</p>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">🚗</div>
+            <h3>Carpool Coordination</h3>
+            <p>Share rides and save gas!</p>
+            <button class="btn" style="margin-top: 15px">
+              Sign Up for Carpool
+            </button>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">🚨</div>
+            <h3>Emergency Contacts</h3>
+            <p>Park Ranger: (555) 123-4567</p>
+            <p>Local Hospital: (555) 987-6543</p>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">💡</div>
+            <h3>First Timer Tips</h3>
+            <p>New to camping? We've got you covered!</p>
+            <ul style="text-align: left; margin-top: 10px">
+              <li>Dress in layers</li>
+              <li>Bring extra socks</li>
+              <li>Don't forget bug spray!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connection Status -->
+    <div class="connection-status" id="connectionStatus">
+      <span class="status-icon">🟢</span>
+      <span class="status-text">Connected</span>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      // Firebase Configuration - Replace with your config
+      const firebaseConfig = {
+        // Replace these placeholder values with your actual Firebase config
+        // You can find these values in your Firebase project settings
+        // For security, these should be loaded from environment variables in production
+        apiKey: "YOUR_API_KEY_HERE",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID",
+        measurementId: "YOUR_MEASUREMENT_ID",
+      };
+
+      // Initialize Firebase
+      let db;
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+
+        // Enable offline persistence
+        db.enablePersistence().catch((err) => {
+          if (err.code == "failed-precondition") {
+            console.log(
+              "Multiple tabs open, persistence can only be enabled in one tab at a time."
+            );
+          } else if (err.code == "unimplemented") {
+            console.log(
+              "The current browser does not support offline persistence"
+            );
+          }
+        });
+      } catch (error) {
+        console.log("Firebase initialization error:", error);
+        // Continue with local storage fallback
+      }
+
+      // Connection status monitoring
+      let isOnline = true;
+      function updateConnectionStatus(online) {
+        isOnline = online;
+        const statusEl = document.getElementById("connectionStatus");
+        const statusIcon = statusEl.querySelector(".status-icon");
+        const statusText = statusEl.querySelector(".status-text");
+
+        if (online) {
+          statusEl.classList.remove("offline");
+          statusIcon.textContent = "🟢";
+          statusText.textContent = "Connected";
+          statusEl.style.display = "none";
+        } else {
+          statusEl.classList.add("offline");
+          statusIcon.textContent = "🔴";
+          statusText.textContent =
+            "Offline - Changes will sync when reconnected";
+          statusEl.style.display = "flex";
+        }
+      }
+
+      // Monitor online/offline status
+      window.addEventListener("online", () => updateConnectionStatus(true));
+      window.addEventListener("offline", () => updateConnectionStatus(false));
+
+      // RSVP System
+      const rsvpForm = document.getElementById("rsvpForm");
+      const editForm = document.getElementById("editForm");
+      const editModal = document.getElementById("editModal");
+      const rsvpOptions = document.querySelectorAll(".rsvp-option");
+      let selectedStatus = null;
+      let editingEmail = null;
+
+      // Handle RSVP option selection in modal
+      rsvpOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+          option.classList.add("selected");
+          selectedStatus = option.dataset.status;
+        });
+      });
+
+      // Add new person form
+      rsvpForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("rsvpName").value.trim();
+        const email = document
+          .getElementById("rsvpEmail")
+          .value.trim()
+          .toLowerCase();
+
+        if (!name || !email) {
+          alert("Please enter both name and email");
+          return;
+        }
+
+        const rsvpData = {
+          name,
+          email,
+          status: "unsure", // Default status
+          comment: "",
+          timestamp: new Date(),
+        };
 
         try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+          await saveOrUpdateRSVP(rsvpData);
+
+          // Reset form
+          rsvpForm.reset();
+
+          alert("Person added! Click on their row to set their RSVP status.");
+        } catch (error) {
+          console.error("Error adding person:", error);
+          alert("Error adding person. Please try again.");
         }
+      });
+
+      // Edit form submission
+      editForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!selectedStatus) {
+          alert("Please select an RSVP status");
+          return;
+        }
+
+        const email = document.getElementById("editEmail").value;
+        const comment = document.getElementById("editComment").value;
+
+        try {
+          // Get existing RSVP data
+          const rsvps = await getRSVPs();
+          const existingRsvp = rsvps.find((r) => r.email === email);
+
+          if (existingRsvp) {
+            const updatedRsvp = {
+              ...existingRsvp,
+              status: selectedStatus,
+              comment,
+              timestamp: new Date(),
+            };
+
+            await saveOrUpdateRSVP(updatedRsvp);
+          }
+
+          closeEditModal();
+          alert("RSVP updated successfully!");
+        } catch (error) {
+          console.error("Error updating RSVP:", error);
+          alert("Error updating RSVP. Please try again.");
+        }
+      });
+
+      // Save or update RSVP (handles both new and existing)
+      async function saveOrUpdateRSVP(rsvpData) {
+        try {
+          if (db) {
+            // Check if RSVP already exists
+            const existingQuery = await db
+              .collection("rsvps")
+              .where("email", "==", rsvpData.email)
+              .get();
+
+            if (!existingQuery.empty) {
+              // Update existing RSVP
+              await existingQuery.docs[0].ref.update(rsvpData);
+            } else {
+              // Add new RSVP
+              await db.collection("rsvps").add(rsvpData);
+            }
+          } else {
+            // Fallback to local storage
+            const rsvps = JSON.parse(
+              localStorage.getItem("campingRsvps") || "[]"
+            );
+            const existingIndex = rsvps.findIndex(
+              (r) => r.email === rsvpData.email
+            );
+
+            if (existingIndex >= 0) {
+              rsvps[existingIndex] = rsvpData;
+            } else {
+              rsvps.push(rsvpData);
+            }
+
+            localStorage.setItem("campingRsvps", JSON.stringify(rsvps));
+            updateRSVPDisplay();
+          }
+        } catch (error) {
+          console.error("Error saving RSVP:", error);
+          throw error;
+        }
+      }
+
+      // Get RSVPs from storage
+      async function getRSVPs() {
+        try {
+          if (db) {
+            const snapshot = await db
+              .collection("rsvps")
+              .orderBy("timestamp", "desc")
+              .get();
+            const rsvps = [];
+            snapshot.forEach((doc) => {
+              rsvps.push({ id: doc.id, ...doc.data() });
+            });
+            return rsvps;
+          } else {
+            return JSON.parse(localStorage.getItem("campingRsvps") || "[]");
+          }
+        } catch (error) {
+          console.error("Error getting RSVPs:", error);
+          return JSON.parse(localStorage.getItem("campingRsvps") || "[]");
+        }
+      }
+
+      // Real-time RSVP updates
+      function listenToRSVPs() {
+        if (db) {
+          db.collection("rsvps")
+            .orderBy("timestamp", "desc")
+            .onSnapshot((snapshot) => {
+              const rsvps = [];
+              snapshot.forEach((doc) => {
+                rsvps.push({ id: doc.id, ...doc.data() });
+              });
+              displayRSVPs(rsvps);
+            });
+        } else {
+          // Fallback to local storage
+          updateRSVPDisplay();
+        }
+      }
+
+      function updateRSVPDisplay() {
+        const rsvps = JSON.parse(localStorage.getItem("campingRsvps") || "[]");
+        displayRSVPs(rsvps);
+      }
+
+      function displayRSVPs(rsvps) {
+        updateSummaryStats(rsvps);
+        displayRSVPTable(rsvps);
+      }
+
+      function updateSummaryStats(rsvps) {
+        const definitelyCount = document.getElementById("definitelyCount");
+        const maybeCount = document.getElementById("maybeCount");
+        const notForMeCount = document.getElementById("notForMeCount");
+        const unsureCount = document.getElementById("unsureCount");
+
+        const definitely = rsvps.filter((r) => r.status === "definitely");
+        const maybe = rsvps.filter((r) => r.status === "maybe");
+        const notForMe = rsvps.filter((r) => r.status === "not-for-me");
+        const unsure = rsvps.filter((r) => r.status === "unsure");
+
+        definitelyCount.textContent = definitely.length;
+        maybeCount.textContent = maybe.length;
+        notForMeCount.textContent = notForMe.length;
+        unsureCount.textContent = unsure.length;
+      }
+
+      function displayRSVPTable(rsvps) {
+        const tbody = document.getElementById("rsvpTableBody");
+
+        const statusText = {
+          definitely: "Definitely In",
+          maybe: "In if dates work",
+          "not-for-me": "Not coming",
+          unsure: "Still deciding",
+        };
+
+        tbody.innerHTML = rsvps
+          .map((rsvp) => {
+            return `
+              <tr onclick="openEditModal('${rsvp.email}', '${rsvp.name}', '${
+              rsvp.status
+            }', '${(rsvp.comment || "").replace(/'/g, "&#39;")}')">
+                <td><strong>${rsvp.name}</strong></td>
+                <td>${rsvp.email}</td>
+                <td>
+                  <span class="status-badge ${rsvp.status}">
+                    ${statusText[rsvp.status] || rsvp.status}
+                  </span>
+                </td>
+                <td>${rsvp.comment || "<em>No notes</em>"}</td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      // Modal functions
+      function openEditModal(email, name, status, comment) {
+        editingEmail = email;
+        selectedStatus = status;
+
+        document.getElementById("editEmail").value = email;
+        document.getElementById("editingName").textContent = name;
+        document.getElementById("editComment").value = comment || "";
+
+        // Select current status
+        rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+        const currentOption = document.querySelector(
+          `[data-status="${status}"]`
+        );
+        if (currentOption) {
+          currentOption.classList.add("selected");
+        }
+
+        editModal.style.display = "block";
+      }
+
+      function closeEditModal() {
+        editModal.style.display = "none";
+        editingEmail = null;
+        selectedStatus = null;
+        rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+        editForm.reset();
+      }
+
+      // Close modal when clicking outside
+      window.onclick = function (event) {
+        if (event.target === editModal) {
+          closeEditModal();
+        }
+      };
+
+      // Legacy function name compatibility
+      function displayAttendees(rsvps) {
+        displayRSVPs(rsvps);
+      }
+
+      // Campsite Data
+      const campsites = [
+        {
+          id: "pine-grove",
+          name: "Pine Grove Campground",
+          emoji: "🌲",
+          features: [
+            "Lake access",
+            "Hot showers",
+            "Fire pits",
+            "Hiking trails",
+          ],
+          distance: "45 miles",
+          cost: "$25/night",
+        },
+        {
+          id: "mountain-view",
+          name: "Mountain View Site",
+          emoji: "⛰️",
+          features: [
+            "Scenic views",
+            "Rock climbing",
+            "Stargazing deck",
+            "Group shelter",
+          ],
+          distance: "72 miles",
+          cost: "$30/night",
+        },
+        {
+          id: "riverside",
+          name: "Riverside Retreat",
+          emoji: "🏞️",
+          features: ["River access", "Fishing", "Kayak rentals", "Beach area"],
+          distance: "58 miles",
+          cost: "$28/night",
+        },
+      ];
+
+      // Display campsites
+      function displayCampsites() {
+        const campsiteGrid = document.getElementById("campsiteGrid");
+
+        campsites.forEach((campsite) => {
+          const card = document.createElement("div");
+          card.className = "campsite-card";
+          card.innerHTML = `
+                    <div class="campsite-image">${campsite.emoji}</div>
+                    <div class="campsite-info">
+                        <h3 class="campsite-name">${campsite.name}</h3>
+                        <ul class="campsite-features">
+                            ${campsite.features
+                              .map((f) => `<li>${f}</li>`)
+                              .join("")}
+                        </ul>
+                        <p><strong>Distance:</strong> ${campsite.distance}</p>
+                        <p><strong>Cost:</strong> ${campsite.cost}</p>
+                        <div class="vote-section">
+                            <span class="vote-count" id="votes-${
+                              campsite.id
+                            }">0 votes</span>
+                            <button class="btn" onclick="voteCampsite('${
+                              campsite.id
+                            }')">Vote</button>
+                        </div>
+                    </div>
+                `;
+          campsiteGrid.appendChild(card);
+        });
+
+        // Listen to vote updates
+        if (db) {
+          campsites.forEach((campsite) => {
+            db.collection("campsite_votes")
+              .where("campsite_id", "==", campsite.id)
+              .onSnapshot((snapshot) => {
+                document.getElementById(
+                  `votes-${campsite.id}`
+                ).textContent = `${snapshot.size} votes`;
+              });
+          });
+        }
+      }
+
+      // Vote for campsite
+      async function voteCampsite(campsiteId) {
+        const voterName = prompt("Enter your name to vote:");
+        if (!voterName) return;
+
+        try {
+          if (db) {
+            // Check if already voted
+            const existingVote = await db
+              .collection("campsite_votes")
+              .where("voter_name", "==", voterName)
+              .get();
+
+            if (!existingVote.empty) {
+              // Update existing vote
+              await existingVote.docs[0].ref.update({
+                campsite_id: campsiteId,
+                timestamp: new Date(),
+              });
+            } else {
+              // Add new vote
+              await db.collection("campsite_votes").add({
+                campsite_id: campsiteId,
+                voter_name: voterName,
+                timestamp: new Date(),
+              });
+            }
+          } else {
+            // Local storage fallback
+            const votes = JSON.parse(
+              localStorage.getItem("campsiteVotes") || "{}"
+            );
+            votes[voterName] = campsiteId;
+            localStorage.setItem("campsiteVotes", JSON.stringify(votes));
+            updateVoteDisplay();
+          }
+
+          alert("Vote recorded!");
+        } catch (error) {
+          console.error("Error voting:", error);
+          alert("Error recording vote. Please try again.");
+        }
+      }
+
+      function updateVoteDisplay() {
+        const votes = JSON.parse(localStorage.getItem("campsiteVotes") || "{}");
+        const voteCounts = {};
+
+        Object.values(votes).forEach((campsiteId) => {
+          voteCounts[campsiteId] = (voteCounts[campsiteId] || 0) + 1;
+        });
+
+        campsites.forEach((campsite) => {
+          const count = voteCounts[campsite.id] || 0;
+          document.getElementById(
+            `votes-${campsite.id}`
+          ).textContent = `${count} votes`;
+        });
+      }
+
+      // Packing List Categories
+      const packingCategories = [
+        {
+          name: "Camp Equipment",
+          icon: "⛺",
+          items: [
+            { name: "Tents (4-person)", quantity: 3, claimed_by: null },
+            { name: "Sleeping bags", quantity: 10, claimed_by: null },
+            { name: "Camping chairs", quantity: 10, claimed_by: null },
+            { name: "Lanterns", quantity: 4, claimed_by: null },
+            { name: "Cooler", quantity: 2, claimed_by: null },
+            { name: "Camp stove", quantity: 2, claimed_by: null },
+            { name: "First aid kit", quantity: 1, claimed_by: null },
+          ],
+        },
+        {
+          name: "Food & Drinks",
+          icon: "🍔",
+          items: [
+            { name: "Hot dogs", quantity: 30, claimed_by: null },
+            { name: "Burgers", quantity: 20, claimed_by: null },
+            { name: "S'mores supplies", quantity: 1, claimed_by: null },
+            { name: "Water bottles", quantity: 48, claimed_by: null },
+            { name: "Snacks", quantity: 10, claimed_by: null },
+            { name: "Coffee", quantity: 2, claimed_by: null },
+          ],
+        },
+        {
+          name: "Personal Items",
+          icon: "🎒",
+          items: [
+            { name: "Bug spray", quantity: 5, claimed_by: null },
+            { name: "Sunscreen", quantity: 5, claimed_by: null },
+            { name: "Flashlights", quantity: 10, claimed_by: null },
+            { name: "Portable chargers", quantity: 5, claimed_by: null },
+            { name: "Toiletries", quantity: 1, claimed_by: null },
+          ],
+        },
+      ];
+
+      // Display packing lists
+      function displayPackingLists() {
+        const container = document.getElementById("packingCategories");
+
+        packingCategories.forEach((category, catIndex) => {
+          const categoryDiv = document.createElement("div");
+          categoryDiv.className = "packing-category";
+          categoryDiv.innerHTML = `
+                    <h3 class="category-title">
+                        <span>${category.icon}</span>
+                        ${category.name}
+                    </h3>
+                    <div id="items-${catIndex}"></div>
+                    <form class="add-item-form" onsubmit="addPackingItem(event, ${catIndex})">
+                        <input type="text" placeholder="Add new item..." required>
+                        <button type="submit" class="btn">Add</button>
+                    </form>
+                `;
+          container.appendChild(categoryDiv);
+
+          // Display items
+          displayCategoryItems(catIndex);
+        });
+
+        // Listen to packing list updates
+        if (db) {
+          db.collection("packing_items").onSnapshot(() => {
+            packingCategories.forEach((_, index) => {
+              displayCategoryItems(index);
+            });
+          });
+        }
+      }
+
+      async function displayCategoryItems(categoryIndex) {
+        const category = packingCategories[categoryIndex];
+        const container = document.getElementById(`items-${categoryIndex}`);
+
+        let items = category.items;
+
+        if (db) {
+          try {
+            const snapshot = await db
+              .collection("packing_items")
+              .where("category", "==", category.name)
+              .get();
+
+            const dbItems = [];
+            snapshot.forEach((doc) => {
+              dbItems.push({ id: doc.id, ...doc.data() });
+            });
+
+            if (dbItems.length > 0) {
+              items = dbItems;
+            }
+          } catch (error) {
+            console.error("Error fetching packing items:", error);
+          }
+        }
+
+        container.innerHTML = items
+          .map(
+            (item) => `
+                <div class="packing-item">
+                    <div class="item-info">
+                        <input type="checkbox" class="item-checkbox" 
+                               ${item.claimed_by ? "checked" : ""}
+                               onchange="toggleItemClaim('${item.name}', '${
+              category.name
+            }', this.checked)">
+                        <span>${item.name} ${
+              item.quantity > 1 ? `(${item.quantity})` : ""
+            }</span>
+                        ${
+                          item.claimed_by
+                            ? `<span class="claimed-by">- ${item.claimed_by}</span>`
+                            : ""
+                        }
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      async function toggleItemClaim(itemName, categoryName, claimed) {
+        const claimerName = claimed ? prompt("Enter your name:") : null;
+
+        if (claimed && !claimerName) {
+          event.target.checked = false;
+          return;
+        }
+
+        try {
+          if (db) {
+            const itemQuery = await db
+              .collection("packing_items")
+              .where("name", "==", itemName)
+              .where("category", "==", categoryName)
+              .get();
+
+            if (!itemQuery.empty) {
+              await itemQuery.docs[0].ref.update({
+                claimed_by: claimerName,
+              });
+            } else {
+              // Add new item if not exists
+              await db.collection("packing_items").add({
+                name: itemName,
+                category: categoryName,
+                quantity: 1,
+                claimed_by: claimerName,
+                timestamp: new Date(),
+              });
+            }
+          } else {
+            // Local storage fallback
+            const claims = JSON.parse(
+              localStorage.getItem("packingClaims") || "{}"
+            );
+            const key = `${categoryName}-${itemName}`;
+
+            if (claimed) {
+              claims[key] = claimerName;
+            } else {
+              delete claims[key];
+            }
+
+            localStorage.setItem("packingClaims", JSON.stringify(claims));
+            displayCategoryItems(
+              packingCategories.findIndex((c) => c.name === categoryName)
+            );
+          }
+        } catch (error) {
+          console.error("Error updating item:", error);
+          alert("Error updating item. Please try again.");
+          event.target.checked = !claimed;
+        }
+      }
+
+      async function addPackingItem(event, categoryIndex) {
+        event.preventDefault();
+
+        const form = event.target;
+        const input = form.querySelector("input");
+        const itemName = input.value.trim();
+
+        if (!itemName) return;
+
+        const category = packingCategories[categoryIndex];
+
+        try {
+          if (db) {
+            await db.collection("packing_items").add({
+              name: itemName,
+              category: category.name,
+              quantity: 1,
+              claimed_by: null,
+              timestamp: new Date(),
+            });
+          } else {
+            // Local storage fallback
+            category.items.push({
+              name: itemName,
+              quantity: 1,
+              claimed_by: null,
+            });
+            displayCategoryItems(categoryIndex);
+          }
+
+          input.value = "";
+        } catch (error) {
+          console.error("Error adding item:", error);
+          alert("Error adding item. Please try again.");
+        }
+      }
+
+      // Initialize everything
+      document.addEventListener("DOMContentLoaded", () => {
+        listenToRSVPs();
+        displayCampsites();
+        displayPackingLists();
+
+        // Check initial connection status
+        updateConnectionStatus(navigator.onLine);
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute("href"));
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth" });
+            }
+          });
+        });
       });
     </script>
   </body>
