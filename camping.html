@@ -209,13 +209,261 @@
         border-radius: 10px;
       }
 
-      .attendee {
-        display: inline-block;
+      .rsvp-summary {
+        margin: 20px 0;
+        padding: 20px;
         background: white;
-        padding: 8px 16px;
-        margin: 5px;
-        border-radius: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .rsvp-instructions {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: var(--cream);
+        border-radius: 8px;
+        border: 1px solid var(--sage-green);
+      }
+
+      .rsvp-instructions p {
+        margin: 5px 0;
+      }
+
+      .rsvp-table-container {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin: 20px 0;
+      }
+
+      .rsvp-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .rsvp-table th {
+        background: var(--forest-green);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: bold;
+      }
+
+      .rsvp-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .rsvp-table tbody tr {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .rsvp-table tbody tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.85em;
+        font-weight: bold;
+      }
+
+      .status-badge.definitely {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-badge.maybe {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-badge.not-for-me {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .status-badge.unsure {
+        background: #e2e3e5;
+        color: #383d41;
+      }
+
+      .add-new-rsvp {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 20px;
+      }
+
+      .add-new-rsvp h4 {
+        margin-bottom: 15px;
+        color: var(--forest-green);
+      }
+
+      .form-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+
+      .form-row input {
+        flex: 1;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+      }
+
+      .modal-content {
+        position: relative;
+        background-color: white;
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: modalSlideIn 0.3s ease-out;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-content h3 {
+        color: var(--forest-green);
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .edit-name {
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+        color: var(--warm-brown);
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        text-align: center;
+      }
+
+      .stat {
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 0.9em;
+      }
+
+      .stat.definitely {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .stat.maybe {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .stat.not-for-me {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .stat.unsure {
+        background: #e2e3e5;
+        color: #383d41;
+      }
+
+      .rsvp-list {
+        margin-top: 20px;
+      }
+
+      .attendee {
+        display: block;
+        background: white;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid var(--sage-green);
+      }
+
+      .attendee[data-status="definitely"] {
+        border-left-color: #28a745;
+      }
+
+      .attendee[data-status="maybe"] {
+        border-left-color: #ffc107;
+      }
+
+      .attendee[data-status="not-for-me"] {
+        border-left-color: #dc3545;
+      }
+
+      .attendee[data-status="unsure"] {
+        border-left-color: #6c757d;
+      }
+
+      .attendee-name {
+        font-weight: bold;
+        color: var(--forest-green);
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .attendee-email {
+        color: var(--warm-brown);
+        font-size: 0.9em;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .attendee-comment {
+        color: var(--dark-text);
+        font-style: italic;
+        font-size: 0.9em;
+        display: block;
       }
 
       /* Date Coordination */
@@ -507,39 +755,110 @@
     <!-- RSVP Section -->
     <section class="section">
       <div class="container">
-        <h2 class="section-title">Are You Coming? 🎉</h2>
+        <h2 class="section-title">RSVP Status 🎉</h2>
 
         <div class="rsvp-section">
-          <form class="rsvp-form" id="rsvpForm">
-            <input type="text" id="rsvpName" placeholder="Your Name" required />
+          <div class="rsvp-instructions">
+            <p><strong>Click on your row to update your RSVP status</strong></p>
+            <p>Don't see your name? Add yourself below!</p>
+          </div>
 
-            <div class="rsvp-options">
-              <div class="rsvp-option" data-status="definitely">
-                <h3>Definitely Coming! 🙌</h3>
-                <p>Count me in!</p>
-              </div>
-              <div class="rsvp-option" data-status="maybe">
-                <h3>Coming if dates work 📅</h3>
-                <p>I'll try my best</p>
-              </div>
-              <div class="rsvp-option" data-status="no">
-                <h3>Can't make it 😢</h3>
-                <p>Next time!</p>
-              </div>
+          <div class="rsvp-summary">
+            <div class="summary-stats">
+              <span class="stat definitely"
+                >Definitely In: <strong id="definitelyCount">0</strong></span
+              >
+              <span class="stat maybe"
+                >If dates work: <strong id="maybeCount">0</strong></span
+              >
+              <span class="stat not-for-me"
+                >Not coming: <strong id="notForMeCount">0</strong></span
+              >
+              <span class="stat unsure"
+                >Still deciding: <strong id="unsureCount">0</strong></span
+              >
             </div>
+          </div>
 
-            <textarea
-              id="rsvpComment"
-              placeholder="Any comments or dietary restrictions?"
-              rows="3"
-            ></textarea>
+          <div class="rsvp-table-container">
+            <table class="rsvp-table" id="rsvpTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="rsvpTableBody">
+                <!-- RSVPs will be populated here -->
+              </tbody>
+            </table>
+          </div>
 
-            <button type="submit" class="btn">Submit RSVP</button>
-          </form>
+          <div class="add-new-rsvp">
+            <h4>Add New Person</h4>
+            <form class="rsvp-form" id="rsvpForm">
+              <div class="form-row">
+                <input type="text" id="rsvpName" placeholder="Name" required />
+                <input
+                  type="email"
+                  id="rsvpEmail"
+                  placeholder="Email"
+                  required
+                />
+                <button type="submit" class="btn">Add Person</button>
+              </div>
+            </form>
+          </div>
+        </div>
 
-          <div class="attendees-list">
-            <h3>Who's Coming (<span id="attendeeCount">0</span> confirmed)</h3>
-            <div id="attendeesList"></div>
+        <!-- Edit Modal -->
+        <div class="modal" id="editModal">
+          <div class="modal-content">
+            <h3>Update RSVP Status</h3>
+            <form id="editForm">
+              <input type="hidden" id="editEmail" />
+              <div class="edit-name">
+                <strong id="editingName"></strong>
+              </div>
+
+              <div class="rsvp-options">
+                <div class="rsvp-option" data-status="definitely">
+                  <h4>Definitely In! 🙌</h4>
+                  <p>Count me in!</p>
+                </div>
+                <div class="rsvp-option" data-status="maybe">
+                  <h4>In if the dates work 📅</h4>
+                  <p>I'll come if dates align</p>
+                </div>
+                <div class="rsvp-option" data-status="not-for-me">
+                  <h4>Camping is not for me 🏠</h4>
+                  <p>I'll pass on this one</p>
+                </div>
+                <div class="rsvp-option" data-status="unsure">
+                  <h4>Unsure/Still deciding 🤔</h4>
+                  <p>Let me think about it</p>
+                </div>
+              </div>
+
+              <textarea
+                id="editComment"
+                placeholder="Any comments, dietary restrictions, or special requests?"
+                rows="3"
+              ></textarea>
+
+              <div class="modal-buttons">
+                <button type="submit" class="btn">Update RSVP</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="closeEditModal()"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -712,9 +1031,13 @@
 
       // RSVP System
       const rsvpForm = document.getElementById("rsvpForm");
+      const editForm = document.getElementById("editForm");
+      const editModal = document.getElementById("editModal");
       const rsvpOptions = document.querySelectorAll(".rsvp-option");
       let selectedStatus = null;
+      let editingEmail = null;
 
+      // Handle RSVP option selection in modal
       rsvpOptions.forEach((option) => {
         option.addEventListener("click", () => {
           rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
@@ -723,48 +1046,140 @@
         });
       });
 
+      // Add new person form
       rsvpForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const name = document.getElementById("rsvpName").value;
-        const comment = document.getElementById("rsvpComment").value;
+        const name = document.getElementById("rsvpName").value.trim();
+        const email = document
+          .getElementById("rsvpEmail")
+          .value.trim()
+          .toLowerCase();
 
-        if (!selectedStatus) {
-          alert("Please select your RSVP status");
+        if (!name || !email) {
+          alert("Please enter both name and email");
           return;
         }
 
         const rsvpData = {
           name,
-          status: selectedStatus,
-          comment,
+          email,
+          status: "unsure", // Default status
+          comment: "",
           timestamp: new Date(),
         };
 
         try {
+          await saveOrUpdateRSVP(rsvpData);
+
+          // Reset form
+          rsvpForm.reset();
+
+          alert("Person added! Click on their row to set their RSVP status.");
+        } catch (error) {
+          console.error("Error adding person:", error);
+          alert("Error adding person. Please try again.");
+        }
+      });
+
+      // Edit form submission
+      editForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!selectedStatus) {
+          alert("Please select an RSVP status");
+          return;
+        }
+
+        const email = document.getElementById("editEmail").value;
+        const comment = document.getElementById("editComment").value;
+
+        try {
+          // Get existing RSVP data
+          const rsvps = await getRSVPs();
+          const existingRsvp = rsvps.find((r) => r.email === email);
+
+          if (existingRsvp) {
+            const updatedRsvp = {
+              ...existingRsvp,
+              status: selectedStatus,
+              comment,
+              timestamp: new Date(),
+            };
+
+            await saveOrUpdateRSVP(updatedRsvp);
+          }
+
+          closeEditModal();
+          alert("RSVP updated successfully!");
+        } catch (error) {
+          console.error("Error updating RSVP:", error);
+          alert("Error updating RSVP. Please try again.");
+        }
+      });
+
+      // Save or update RSVP (handles both new and existing)
+      async function saveOrUpdateRSVP(rsvpData) {
+        try {
           if (db) {
-            await db.collection("rsvps").add(rsvpData);
+            // Check if RSVP already exists
+            const existingQuery = await db
+              .collection("rsvps")
+              .where("email", "==", rsvpData.email)
+              .get();
+
+            if (!existingQuery.empty) {
+              // Update existing RSVP
+              await existingQuery.docs[0].ref.update(rsvpData);
+            } else {
+              // Add new RSVP
+              await db.collection("rsvps").add(rsvpData);
+            }
           } else {
             // Fallback to local storage
             const rsvps = JSON.parse(
               localStorage.getItem("campingRsvps") || "[]"
             );
-            rsvps.push(rsvpData);
+            const existingIndex = rsvps.findIndex(
+              (r) => r.email === rsvpData.email
+            );
+
+            if (existingIndex >= 0) {
+              rsvps[existingIndex] = rsvpData;
+            } else {
+              rsvps.push(rsvpData);
+            }
+
             localStorage.setItem("campingRsvps", JSON.stringify(rsvps));
-            updateAttendeesDisplay();
+            updateRSVPDisplay();
           }
-
-          // Reset form
-          rsvpForm.reset();
-          rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
-          selectedStatus = null;
-
-          alert("RSVP submitted successfully!");
         } catch (error) {
-          console.error("Error submitting RSVP:", error);
-          alert("Error submitting RSVP. Please try again.");
+          console.error("Error saving RSVP:", error);
+          throw error;
         }
-      });
+      }
+
+      // Get RSVPs from storage
+      async function getRSVPs() {
+        try {
+          if (db) {
+            const snapshot = await db
+              .collection("rsvps")
+              .orderBy("timestamp", "desc")
+              .get();
+            const rsvps = [];
+            snapshot.forEach((doc) => {
+              rsvps.push({ id: doc.id, ...doc.data() });
+            });
+            return rsvps;
+          } else {
+            return JSON.parse(localStorage.getItem("campingRsvps") || "[]");
+          }
+        } catch (error) {
+          console.error("Error getting RSVPs:", error);
+          return JSON.parse(localStorage.getItem("campingRsvps") || "[]");
+        }
+      }
 
       // Real-time RSVP updates
       function listenToRSVPs() {
@@ -776,29 +1191,110 @@
               snapshot.forEach((doc) => {
                 rsvps.push({ id: doc.id, ...doc.data() });
               });
-              displayAttendees(rsvps);
+              displayRSVPs(rsvps);
             });
         } else {
           // Fallback to local storage
-          updateAttendeesDisplay();
+          updateRSVPDisplay();
         }
       }
 
-      function updateAttendeesDisplay() {
+      function updateRSVPDisplay() {
         const rsvps = JSON.parse(localStorage.getItem("campingRsvps") || "[]");
-        displayAttendees(rsvps);
+        displayRSVPs(rsvps);
       }
 
-      function displayAttendees(rsvps) {
-        const attendeesList = document.getElementById("attendeesList");
-        const attendeeCount = document.getElementById("attendeeCount");
+      function displayRSVPs(rsvps) {
+        updateSummaryStats(rsvps);
+        displayRSVPTable(rsvps);
+      }
 
-        const confirmed = rsvps.filter((r) => r.status === "definitely");
-        attendeeCount.textContent = confirmed.length;
+      function updateSummaryStats(rsvps) {
+        const definitelyCount = document.getElementById("definitelyCount");
+        const maybeCount = document.getElementById("maybeCount");
+        const notForMeCount = document.getElementById("notForMeCount");
+        const unsureCount = document.getElementById("unsureCount");
 
-        attendeesList.innerHTML = confirmed
-          .map((attendee) => `<span class="attendee">${attendee.name} ✓</span>`)
+        const definitely = rsvps.filter((r) => r.status === "definitely");
+        const maybe = rsvps.filter((r) => r.status === "maybe");
+        const notForMe = rsvps.filter((r) => r.status === "not-for-me");
+        const unsure = rsvps.filter((r) => r.status === "unsure");
+
+        definitelyCount.textContent = definitely.length;
+        maybeCount.textContent = maybe.length;
+        notForMeCount.textContent = notForMe.length;
+        unsureCount.textContent = unsure.length;
+      }
+
+      function displayRSVPTable(rsvps) {
+        const tbody = document.getElementById("rsvpTableBody");
+
+        const statusText = {
+          definitely: "Definitely In",
+          maybe: "In if dates work",
+          "not-for-me": "Not coming",
+          unsure: "Still deciding",
+        };
+
+        tbody.innerHTML = rsvps
+          .map((rsvp) => {
+            return `
+              <tr onclick="openEditModal('${rsvp.email}', '${rsvp.name}', '${
+              rsvp.status
+            }', '${(rsvp.comment || "").replace(/'/g, "&#39;")}')">
+                <td><strong>${rsvp.name}</strong></td>
+                <td>${rsvp.email}</td>
+                <td>
+                  <span class="status-badge ${rsvp.status}">
+                    ${statusText[rsvp.status] || rsvp.status}
+                  </span>
+                </td>
+                <td>${rsvp.comment || "<em>No notes</em>"}</td>
+              </tr>
+            `;
+          })
           .join("");
+      }
+
+      // Modal functions
+      function openEditModal(email, name, status, comment) {
+        editingEmail = email;
+        selectedStatus = status;
+
+        document.getElementById("editEmail").value = email;
+        document.getElementById("editingName").textContent = name;
+        document.getElementById("editComment").value = comment || "";
+
+        // Select current status
+        rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+        const currentOption = document.querySelector(
+          `[data-status="${status}"]`
+        );
+        if (currentOption) {
+          currentOption.classList.add("selected");
+        }
+
+        editModal.style.display = "block";
+      }
+
+      function closeEditModal() {
+        editModal.style.display = "none";
+        editingEmail = null;
+        selectedStatus = null;
+        rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+        editForm.reset();
+      }
+
+      // Close modal when clicking outside
+      window.onclick = function (event) {
+        if (event.target === editModal) {
+          closeEditModal();
+        }
+      };
+
+      // Legacy function name compatibility
+      function displayAttendees(rsvps) {
+        displayRSVPs(rsvps);
       }
 
       // Campsite Data
