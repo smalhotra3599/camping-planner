@@ -1454,14 +1454,26 @@
               <div style="margin-bottom: 15px">
                 <label
                   style="display: block; margin-bottom: 5px; font-weight: bold"
-                  >Emoji (optional):</label
+                  >Image URL (optional):</label
                 >
                 <input
-                  type="text"
-                  id="campsiteEmoji"
-                  placeholder="🏔️"
-                  maxlength="2"
-                  style="width: 80px"
+                  type="url"
+                  id="campsiteImageUrl"
+                  placeholder="https://example.com/campsite-photo.jpg"
+                  style="width: 100%"
+                />
+              </div>
+
+              <div style="margin-bottom: 15px">
+                <label
+                  style="display: block; margin-bottom: 5px; font-weight: bold"
+                  >Website (optional):</label
+                >
+                <input
+                  type="url"
+                  id="campsiteWebsite"
+                  placeholder="https://www.campsitename.com"
+                  style="width: 100%"
                 />
               </div>
 
@@ -1520,7 +1532,7 @@
                 >
                 <textarea
                   id="campsiteInfo"
-                  placeholder="Any additional details, website links, or special notes..."
+                  placeholder="Any additional details or special notes..."
                   rows="3"
                 ></textarea>
               </div>
@@ -2498,6 +2510,9 @@
           if (campsiteIdentityReminder) {
             campsiteIdentityReminder.style.display = "none";
           }
+
+          // Update all vote button states when user identity changes
+          refreshAllVoteButtons();
         } else {
           userSelect.style.display = "block";
           currentUserDisplay.style.display = "none";
@@ -2507,7 +2522,28 @@
           if (campsiteIdentityReminder) {
             campsiteIdentityReminder.style.display = "block";
           }
+
+          // Reset all vote buttons when no user is logged in
+          resetAllVoteButtons();
         }
+      }
+
+      // Refresh all vote button states
+      async function refreshAllVoteButtons() {
+        const buttons = document.querySelectorAll('[id^="btn-"]');
+        buttons.forEach((button) => {
+          const campsiteId = button.id.replace("btn-", "");
+          updateVoteButton(campsiteId);
+        });
+      }
+
+      // Reset all vote buttons to default state
+      function resetAllVoteButtons() {
+        const buttons = document.querySelectorAll('[id^="btn-"]');
+        buttons.forEach((button) => {
+          button.textContent = "Vote";
+          button.className = "btn";
+        });
       }
 
       // Clear current user
@@ -2979,49 +3015,8 @@
 
       // FIREBASE-CONNECTED CAMPSITE SYSTEM
 
-      // Default campsite data (fallback when no Firebase data)
-      const defaultCampsites = [
-        {
-          id: "pine-grove",
-          name: "Pine Grove Campground",
-          emoji: "🌲",
-          features: [
-            "Lake access",
-            "Hot showers",
-            "Fire pits",
-            "Hiking trails",
-          ],
-          distance: "45 miles",
-          cost: "$25/night",
-          proposedBy: "System",
-          timestamp: new Date(),
-        },
-        {
-          id: "mountain-view",
-          name: "Mountain View Site",
-          emoji: "⛰️",
-          features: [
-            "Scenic views",
-            "Rock climbing",
-            "Stargazing deck",
-            "Group shelter",
-          ],
-          distance: "72 miles",
-          cost: "$30/night",
-          proposedBy: "System",
-          timestamp: new Date(),
-        },
-        {
-          id: "riverside",
-          name: "Riverside Retreat",
-          emoji: "🏞️",
-          features: ["River access", "Fishing", "Kayak rentals", "Beach area"],
-          distance: "58 miles",
-          cost: "$28/night",
-          proposedBy: "System",
-          timestamp: new Date(),
-        },
-      ];
+      // Default campsite data (now empty - start with no campsites)
+      const defaultCampsites = [];
 
       // Get all campsites from Firebase or local storage
       async function getCampsites() {
@@ -3037,26 +3032,15 @@
               campsites.push({ id: doc.id, ...doc.data() });
             });
 
-            // If no campsites in Firebase, add default ones
-            if (campsites.length === 0) {
-              console.log("No campsites found, adding defaults...");
-              await Promise.all(
-                defaultCampsites.map((campsite) =>
-                  db.collection("campsites").add(campsite)
-                )
-              );
-              return defaultCampsites;
-            }
-
             return campsites;
           } else {
             // Local storage fallback
             const stored = localStorage.getItem("campsites");
-            return stored ? JSON.parse(stored) : defaultCampsites;
+            return stored ? JSON.parse(stored) : [];
           }
         } catch (error) {
           console.error("Error getting campsites:", error);
-          return defaultCampsites;
+          return [];
         }
       }
 
@@ -3080,12 +3064,12 @@
           }
         } catch (error) {
           console.error("Error loading campsites:", error);
-          displayCampsitesList(defaultCampsites);
+          displayCampsitesList([]);
         }
       }
 
       // Display campsites list
-      function displayCampsitesList(campsites) {
+      async function displayCampsitesList(campsites) {
         const campsiteGrid = document.getElementById("campsiteGrid");
 
         if (!campsiteGrid) {
@@ -3095,7 +3079,17 @@
 
         campsiteGrid.innerHTML = "";
 
-        campsites.forEach((campsite) => {
+        if (campsites.length === 0) {
+          campsiteGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #666;">
+              <h3>No campsites proposed yet!</h3>
+              <p>Be the first to propose a campsite for the group.</p>
+            </div>
+          `;
+          return;
+        }
+
+        for (const campsite of campsites) {
           const card = document.createElement("div");
           card.className = "campsite-card";
 
@@ -3115,8 +3109,30 @@
             ? `<p style="margin-top: 10px; font-size: 0.9em; color: #555;">${campsite.additionalInfo}</p>`
             : "";
 
+          const websiteLink = campsite.website
+            ? `<p style="margin-top: 10px;"><a href="${campsite.website}" target="_blank" style="color: var(--forest-green); text-decoration: none;">🌐 Visit Website</a></p>`
+            : "";
+
+          // Check if current user has voted for this campsite
+          const hasVoted = await checkUserVote(campsite.id);
+          const buttonText = hasVoted ? "Remove Vote" : "Vote";
+          const buttonClass = hasVoted ? "btn btn-secondary" : "btn";
+
+          // Check if current user can delete this campsite
+          const canDelete =
+            currentUser && currentUser.email === campsite.proposedByEmail;
+          const deleteButton = canDelete
+            ? `<button class="btn" style="background: #dc3545; margin-left: 10px;" onclick="deleteCampsite('${campsite.id}')">Delete</button>`
+            : "";
+
+          // Handle image display
+          const imageDisplay = campsite.imageUrl
+            ? `<img src="${campsite.imageUrl}" alt="${campsite.name}" style="width: 100%; height: 200px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+               <div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--sage-green), var(--forest-green)); display: none; align-items: center; justify-content: center; font-size: 4em;">🏕️</div>`
+            : `<div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--sage-green), var(--forest-green)); display: flex; align-items: center; justify-content: center; font-size: 4em;">🏕️</div>`;
+
           card.innerHTML = `
-            <div class="campsite-image">${campsite.emoji || "🏕️"}</div>
+            <div class="campsite-image">${imageDisplay}</div>
             <div class="campsite-info">
               <h3 class="campsite-name">${campsite.name}</h3>
               <ul class="campsite-features">
@@ -3124,56 +3140,180 @@
               </ul>
               <p><strong>Distance:</strong> ${campsite.distance}</p>
               <p><strong>Cost:</strong> ${campsite.cost}</p>
+              ${websiteLink}
               ${additionalInfo}
               ${proposedByText}
               <div class="vote-section">
-                <span class="vote-count" id="votes-${
-                  campsite.id
-                }">0 votes</span>
-                <button class="btn" onclick="voteCampsiteEnhanced('${
-                  campsite.id
-                }')">Vote</button>
+                <span class="vote-count" id="votes-${campsite.id}" 
+                      style="cursor: pointer; position: relative;" 
+                      title="Click to see who voted">0 votes
+                  <div class="vote-tooltip" id="tooltip-${campsite.id}" 
+                       style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); 
+                              background: rgba(0,0,0,0.9); color: white; padding: 8px 12px; 
+                              border-radius: 6px; font-size: 0.9em; white-space: nowrap; 
+                              z-index: 1000; opacity: 0; visibility: hidden; 
+                              transition: all 0.3s ease; margin-bottom: 5px; pointer-events: none;">
+                    <div style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); 
+                                border: 5px solid transparent; border-top-color: rgba(0,0,0,0.9);"></div>
+                    No votes yet
+                  </div>
+                </span>
+                <div style="display: flex; gap: 10px;">
+                  <button class="${buttonClass}" id="btn-${campsite.id}" 
+                          onclick="voteCampsiteEnhanced('${campsite.id}')">${buttonText}</button>
+                  ${deleteButton}
+                </div>
               </div>
             </div>
           `;
 
           campsiteGrid.appendChild(card);
 
-          // Load vote count for this campsite
-          loadCampsiteVotes(campsite.id);
-        });
+          // Set up hover events for tooltips
+          const voteElement = document.getElementById(`votes-${campsite.id}`);
+          const tooltip = document.getElementById(`tooltip-${campsite.id}`);
+
+          voteElement.addEventListener("mouseenter", () => {
+            tooltip.style.opacity = "1";
+            tooltip.style.visibility = "visible";
+          });
+
+          voteElement.addEventListener("mouseleave", () => {
+            tooltip.style.opacity = "0";
+            tooltip.style.visibility = "hidden";
+          });
+
+          // Load vote data for this campsite
+          loadCampsiteVotesEnhanced(campsite.id);
+        }
       }
 
-      // Load vote count for a specific campsite
-      async function loadCampsiteVotes(campsiteId) {
+      // Check if current user has voted for a specific campsite
+      async function checkUserVote(campsiteId) {
+        if (!currentUser) return false;
+
+        try {
+          if (db) {
+            const snapshot = await db
+              .collection("campsite_votes")
+              .where("voter_email", "==", currentUser.email)
+              .where("campsite_id", "==", campsiteId)
+              .get();
+            return !snapshot.empty;
+          } else {
+            // Local storage fallback
+            const votes = JSON.parse(
+              localStorage.getItem("campsiteVotes") || "{}"
+            );
+            return votes[currentUser.name] === campsiteId;
+          }
+        } catch (error) {
+          console.error("Error checking user vote:", error);
+          return false;
+        }
+      }
+
+      // Load enhanced vote data for a specific campsite
+      async function loadCampsiteVotesEnhanced(campsiteId) {
         try {
           if (db) {
             db.collection("campsite_votes")
               .where("campsite_id", "==", campsiteId)
               .onSnapshot((snapshot) => {
-                const voteElement = document.getElementById(
-                  `votes-${campsiteId}`
-                );
-                if (voteElement) {
-                  voteElement.textContent = `${snapshot.size} votes`;
-                }
+                const voters = [];
+                snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  voters.push(data.voter_name);
+                });
+
+                updateVoteDisplay(campsiteId, voters);
+
+                // Update button state for current user
+                updateVoteButton(campsiteId);
               });
           } else {
             // Local storage fallback
             const votes = JSON.parse(
               localStorage.getItem("campsiteVotes") || "{}"
             );
-            const voteCount = Object.values(votes).filter(
-              (id) => id === campsiteId
-            ).length;
-            const voteElement = document.getElementById(`votes-${campsiteId}`);
-            if (voteElement) {
-              voteElement.textContent = `${voteCount} votes`;
-            }
+            const voters = Object.entries(votes)
+              .filter(
+                ([name, votedCampsiteId]) => votedCampsiteId === campsiteId
+              )
+              .map(([name]) => name);
+
+            updateVoteDisplay(campsiteId, voters);
+
+            // Update button state for current user
+            updateVoteButton(campsiteId);
           }
         } catch (error) {
           console.error("Error loading votes for campsite:", campsiteId, error);
         }
+      }
+
+      // Update vote display with tooltip
+      function updateVoteDisplay(campsiteId, voters) {
+        const voteElement = document.getElementById(`votes-${campsiteId}`);
+
+        if (voteElement) {
+          voteElement.innerHTML = `${voters.length} votes
+            <div class="vote-tooltip" id="tooltip-${campsiteId}" 
+                 style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); 
+                        background: rgba(0,0,0,0.9); color: white; padding: 8px 12px; 
+                        border-radius: 6px; font-size: 0.9em; white-space: nowrap; 
+                        z-index: 1000; opacity: 0; visibility: hidden; 
+                        transition: all 0.3s ease; margin-bottom: 5px; pointer-events: none;">
+              <div style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); 
+                          border: 5px solid transparent; border-top-color: rgba(0,0,0,0.9);"></div>
+              ${
+                voters.length > 0
+                  ? `Voted: ${voters.join(", ")}`
+                  : "No votes yet"
+              }
+            </div>`;
+
+          // Re-setup hover events for the updated element
+          const tooltip = document.getElementById(`tooltip-${campsiteId}`);
+
+          // Remove existing event listeners to prevent duplicates
+          voteElement.onmouseenter = null;
+          voteElement.onmouseleave = null;
+
+          voteElement.addEventListener("mouseenter", () => {
+            tooltip.style.opacity = "1";
+            tooltip.style.visibility = "visible";
+          });
+
+          voteElement.addEventListener("mouseleave", () => {
+            tooltip.style.opacity = "0";
+            tooltip.style.visibility = "hidden";
+          });
+        }
+      }
+
+      // Update vote button state based on user's current vote
+      async function updateVoteButton(campsiteId) {
+        if (!currentUser) return;
+
+        const hasVoted = await checkUserVote(campsiteId);
+        const button = document.getElementById(`btn-${campsiteId}`);
+
+        if (button) {
+          if (hasVoted) {
+            button.textContent = "Remove Vote";
+            button.className = "btn btn-secondary";
+          } else {
+            button.textContent = "Vote";
+            button.className = "btn";
+          }
+        }
+      }
+
+      // Load vote count for a specific campsite (legacy function - keeping for compatibility)
+      async function loadCampsiteVotes(campsiteId) {
+        // Redirect to enhanced version
+        return loadCampsiteVotesEnhanced(campsiteId);
       }
 
       // Modal functions
@@ -3219,8 +3359,12 @@
           }
 
           const name = document.getElementById("campsiteName").value.trim();
-          const emoji =
-            document.getElementById("campsiteEmoji").value.trim() || "🏕️";
+          const imageUrl = document
+            .getElementById("campsiteImageUrl")
+            .value.trim();
+          const website = document
+            .getElementById("campsiteWebsite")
+            .value.trim();
           const featuresText = document
             .getElementById("campsiteFeatures")
             .value.trim();
@@ -3245,7 +3389,8 @@
 
           const campsiteData = {
             name,
-            emoji,
+            imageUrl,
+            website,
             features,
             distance,
             cost,
@@ -3291,7 +3436,7 @@
         }
       }
 
-      // Enhanced vote function
+      // Enhanced vote function with toggle capability
       async function voteCampsiteEnhanced(campsiteId) {
         if (!currentUser) {
           alert("Please set your identity first!");
@@ -3299,41 +3444,61 @@
         }
 
         const voterName = currentUser.name;
+        const voterEmail = currentUser.email;
 
         try {
           if (db) {
-            // Check if already voted
+            // Check if user already voted for this campsite
             const existingVote = await db
               .collection("campsite_votes")
-              .where("voter_name", "==", voterName)
+              .where("voter_email", "==", voterEmail)
+              .where("campsite_id", "==", campsiteId)
               .get();
 
             if (!existingVote.empty) {
-              // Update existing vote
-              await existingVote.docs[0].ref.update({
-                campsite_id: campsiteId,
-                timestamp: new Date(),
-              });
-              alert("Your vote has been updated!");
+              // Remove existing vote (toggle off)
+              await existingVote.docs[0].ref.delete();
             } else {
+              // Check if user voted for any other campsite and remove it first
+              const anyExistingVote = await db
+                .collection("campsite_votes")
+                .where("voter_email", "==", voterEmail)
+                .get();
+
+              if (!anyExistingVote.empty) {
+                // Remove previous vote for different campsite
+                await anyExistingVote.docs[0].ref.delete();
+              }
+
               // Add new vote
               await db.collection("campsite_votes").add({
                 campsite_id: campsiteId,
                 voter_name: voterName,
-                voter_email: currentUser.email,
+                voter_email: voterEmail,
                 timestamp: new Date(),
               });
-              alert("Vote recorded!");
             }
           } else {
             // Local storage fallback
             const votes = JSON.parse(
               localStorage.getItem("campsiteVotes") || "{}"
             );
-            votes[voterName] = campsiteId;
+
+            if (votes[voterName] === campsiteId) {
+              // Remove vote (toggle off)
+              delete votes[voterName];
+            } else {
+              // Add/update vote
+              votes[voterName] = campsiteId;
+            }
+
             localStorage.setItem("campsiteVotes", JSON.stringify(votes));
-            loadAndDisplayCampsites();
-            alert("Vote recorded!");
+
+            // Manually update all campsites since we don't have real-time updates
+            const campsites = await getCampsites();
+            for (const campsite of campsites) {
+              loadCampsiteVotesEnhanced(campsite.id);
+            }
           }
         } catch (error) {
           console.error("Error voting:", error);
@@ -3362,6 +3527,98 @@
       document.addEventListener("DOMContentLoaded", () => {
         initializeCampsiteSystem();
       });
+
+      // Delete campsite function
+      async function deleteCampsite(campsiteId) {
+        if (!currentUser) {
+          alert("Please set your identity first!");
+          return;
+        }
+
+        const confirmed = confirm(
+          "Are you sure you want to delete this campsite? This action cannot be undone."
+        );
+        if (!confirmed) return;
+
+        try {
+          if (db) {
+            // Get the campsite to verify ownership
+            const campsiteDoc = await db
+              .collection("campsites")
+              .doc(campsiteId)
+              .get();
+
+            if (!campsiteDoc.exists) {
+              alert("Campsite not found.");
+              return;
+            }
+
+            const campsiteData = campsiteDoc.data();
+            if (campsiteData.proposedByEmail !== currentUser.email) {
+              alert("You can only delete campsites you created.");
+              return;
+            }
+
+            // Delete the campsite
+            await db.collection("campsites").doc(campsiteId).delete();
+
+            // Also delete all votes for this campsite
+            const votes = await db
+              .collection("campsite_votes")
+              .where("campsite_id", "==", campsiteId)
+              .get();
+
+            const batch = db.batch();
+            votes.forEach((doc) => {
+              batch.delete(doc.ref);
+            });
+            await batch.commit();
+          } else {
+            // Local storage fallback
+            const campsites = JSON.parse(
+              localStorage.getItem("campsites") || "[]"
+            );
+            const campsiteIndex = campsites.findIndex(
+              (c) => c.id === campsiteId
+            );
+
+            if (campsiteIndex === -1) {
+              alert("Campsite not found.");
+              return;
+            }
+
+            if (
+              campsites[campsiteIndex].proposedByEmail !== currentUser.email
+            ) {
+              alert("You can only delete campsites you created.");
+              return;
+            }
+
+            // Remove the campsite
+            campsites.splice(campsiteIndex, 1);
+            localStorage.setItem("campsites", JSON.stringify(campsites));
+
+            // Remove votes for this campsite
+            const votes = JSON.parse(
+              localStorage.getItem("campsiteVotes") || "{}"
+            );
+            Object.keys(votes).forEach((voter) => {
+              if (votes[voter] === campsiteId) {
+                delete votes[voter];
+              }
+            });
+            localStorage.setItem("campsiteVotes", JSON.stringify(votes));
+
+            // Refresh display
+            loadAndDisplayCampsites();
+          }
+
+          alert("Campsite deleted successfully!");
+        } catch (error) {
+          console.error("Error deleting campsite:", error);
+          alert("Error deleting campsite. Please try again.");
+        }
+      }
     </script>
   </body>
 </html>
