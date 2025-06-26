@@ -1283,8 +1283,50 @@
       </div>
     </section>
 
-    <!-- Date Coordination -->
+    <!-- Universal User Identity Section -->
     <section class="section" style="background: var(--light-gray)">
+      <div class="container">
+        <h2 class="section-title">Who Are You? 👤</h2>
+
+        <div class="user-selector">
+          <div class="user-input-section">
+            <p
+              style="
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 1.1em;
+                color: var(--dark-text);
+              "
+            >
+              Select your identity to participate in date coordination and other
+              features
+            </p>
+            <div class="user-form">
+              <select id="availabilityUserSelect" required>
+                <option value="">Select your name from the RSVP list...</option>
+              </select>
+            </div>
+            <div
+              class="current-user"
+              id="currentUserDisplay"
+              style="display: none"
+            >
+              <span id="currentUserName"></span>
+              <button
+                type="button"
+                class="btn-small"
+                onclick="clearCurrentUser()"
+              >
+                Change User
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Date Coordination -->
+    <section class="section">
       <div class="container">
         <h2 class="section-title">Find the Perfect Dates 📅</h2>
 
@@ -1294,18 +1336,24 @@
             Labor Day!
           </p>
 
-          <!-- User Selection -->
-          <div class="user-selector">
-            <div class="user-input-section">
-              <h3>Who are you? 👤</h3>
-              <div class="user-form">
-                <select id="availabilityUserSelect" required>
-                  <option value="">
-                    Select your name from the RSVP list...
-                  </option>
-                </select>
-              </div>
-            </div>
+          <div
+            id="identityReminder"
+            style="
+              text-align: center;
+              margin-bottom: 30px;
+              padding: 15px;
+              background: #fff3cd;
+              border: 1px solid #ffeaa7;
+              border-radius: 8px;
+              color: #856404;
+            "
+          >
+            <p>
+              <strong
+                >💡 Set your identity above to start selecting your available
+                weekends!</strong
+              >
+            </p>
           </div>
 
           <!-- Popular Weekends Summary -->
@@ -1651,6 +1699,7 @@
         }
 
         const email = document.getElementById("editEmail").value;
+        const name = document.getElementById("editingName").textContent;
         const comment = document.getElementById("editComment").value;
 
         try {
@@ -1667,6 +1716,30 @@
             };
 
             await saveOrUpdateRSVP(updatedRsvp);
+
+            // Auto-populate user identity if not set
+            if (!currentUser) {
+              const userSelect = document.getElementById(
+                "availabilityUserSelect"
+              );
+              const userOption = JSON.stringify({ name: name, email: email });
+
+              // Check if this user exists in the dropdown
+              const optionExists = Array.from(userSelect.options).some(
+                (option) => option.value === userOption
+              );
+
+              if (optionExists) {
+                userSelect.value = userOption;
+                currentUser = { name: name, email: email };
+                localStorage.setItem(
+                  "campingUser",
+                  JSON.stringify(currentUser)
+                );
+                updateUserDisplay();
+                updateWeekendGridForUser();
+              }
+            }
           }
 
           closeEditModal();
@@ -2298,6 +2371,8 @@
         generateWeekendGrid();
         listenToAvailabilities();
         updateAvailabilityDisplay();
+        // Ensure user display is updated on initial load
+        updateUserDisplay();
       }
 
       // User management
@@ -2310,6 +2385,7 @@
           currentUser = JSON.parse(storedUser);
           // Set the dropdown to match the stored user
           userSelect.value = JSON.stringify(currentUser);
+          updateUserDisplay();
         }
 
         // Auto-update when dropdown changes
@@ -2324,11 +2400,46 @@
             localStorage.removeItem("campingUser");
           }
 
+          updateUserDisplay();
           updateWeekendGridForUser();
         });
 
         // Populate user dropdown when RSVPs change
         populateUserDropdown();
+      }
+
+      // Update user display
+      function updateUserDisplay() {
+        const userSelect = document.getElementById("availabilityUserSelect");
+        const currentUserDisplay =
+          document.getElementById("currentUserDisplay");
+        const currentUserName = document.getElementById("currentUserName");
+        const identityReminder = document.getElementById("identityReminder");
+
+        if (currentUser) {
+          userSelect.style.display = "none";
+          currentUserDisplay.style.display = "flex";
+          currentUserName.textContent = `Logged in as: ${currentUser.name}`;
+          if (identityReminder) {
+            identityReminder.style.display = "none";
+          }
+        } else {
+          userSelect.style.display = "block";
+          currentUserDisplay.style.display = "none";
+          if (identityReminder) {
+            identityReminder.style.display = "block";
+          }
+        }
+      }
+
+      // Clear current user
+      function clearCurrentUser() {
+        currentUser = null;
+        localStorage.removeItem("campingUser");
+        const userSelect = document.getElementById("availabilityUserSelect");
+        userSelect.value = "";
+        updateUserDisplay();
+        updateWeekendGridForUser();
       }
 
       async function populateUserDropdown() {
@@ -2358,7 +2469,26 @@
           )
         ) {
           select.value = currentValue;
+        } else if (currentUser) {
+          // Check if current user still exists in the new list
+          const currentUserOption = JSON.stringify(currentUser);
+          const optionExists = rsvps.some(
+            (rsvp) =>
+              JSON.stringify({ name: rsvp.name, email: rsvp.email }) ===
+              currentUserOption
+          );
+
+          if (optionExists) {
+            select.value = currentUserOption;
+          } else {
+            // Current user no longer exists, clear it
+            currentUser = null;
+            localStorage.removeItem("campingUser");
+          }
         }
+
+        // Update display after populating
+        updateUserDisplay();
       }
 
       function setCurrentUser() {
@@ -2768,6 +2898,378 @@
           </div>
         `;
       }
+
+      // FIREBASE-CONNECTED CAMPSITE SYSTEM
+
+      // Default campsite data (fallback when no Firebase data)
+      const defaultCampsites = [
+        {
+          id: "pine-grove",
+          name: "Pine Grove Campground",
+          emoji: "🌲",
+          features: [
+            "Lake access",
+            "Hot showers",
+            "Fire pits",
+            "Hiking trails",
+          ],
+          distance: "45 miles",
+          cost: "$25/night",
+          proposedBy: "System",
+          timestamp: new Date(),
+        },
+        {
+          id: "mountain-view",
+          name: "Mountain View Site",
+          emoji: "⛰️",
+          features: [
+            "Scenic views",
+            "Rock climbing",
+            "Stargazing deck",
+            "Group shelter",
+          ],
+          distance: "72 miles",
+          cost: "$30/night",
+          proposedBy: "System",
+          timestamp: new Date(),
+        },
+        {
+          id: "riverside",
+          name: "Riverside Retreat",
+          emoji: "🏞️",
+          features: ["River access", "Fishing", "Kayak rentals", "Beach area"],
+          distance: "58 miles",
+          cost: "$28/night",
+          proposedBy: "System",
+          timestamp: new Date(),
+        },
+      ];
+
+      // Get all campsites from Firebase or local storage
+      async function getCampsites() {
+        try {
+          if (db) {
+            const snapshot = await db
+              .collection("campsites")
+              .orderBy("timestamp", "desc")
+              .get();
+
+            const campsites = [];
+            snapshot.forEach((doc) => {
+              campsites.push({ id: doc.id, ...doc.data() });
+            });
+
+            // If no campsites in Firebase, add default ones
+            if (campsites.length === 0) {
+              console.log("No campsites found, adding defaults...");
+              await Promise.all(
+                defaultCampsites.map((campsite) =>
+                  db.collection("campsites").add(campsite)
+                )
+              );
+              return defaultCampsites;
+            }
+
+            return campsites;
+          } else {
+            // Local storage fallback
+            const stored = localStorage.getItem("campsites");
+            return stored ? JSON.parse(stored) : defaultCampsites;
+          }
+        } catch (error) {
+          console.error("Error getting campsites:", error);
+          return defaultCampsites;
+        }
+      }
+
+      // Load and display campsites
+      async function loadAndDisplayCampsites() {
+        try {
+          const campsites = await getCampsites();
+          displayCampsitesList(campsites);
+
+          // Listen for real-time updates
+          if (db) {
+            db.collection("campsites")
+              .orderBy("timestamp", "desc")
+              .onSnapshot((snapshot) => {
+                const updatedCampsites = [];
+                snapshot.forEach((doc) => {
+                  updatedCampsites.push({ id: doc.id, ...doc.data() });
+                });
+                displayCampsitesList(updatedCampsites);
+              });
+          }
+        } catch (error) {
+          console.error("Error loading campsites:", error);
+          displayCampsitesList(defaultCampsites);
+        }
+      }
+
+      // Display campsites list
+      function displayCampsitesList(campsites) {
+        const campsiteGrid = document.getElementById("campsiteGrid");
+
+        if (!campsiteGrid) {
+          console.error("Campsite grid element not found");
+          return;
+        }
+
+        campsiteGrid.innerHTML = "";
+
+        campsites.forEach((campsite) => {
+          const card = document.createElement("div");
+          card.className = "campsite-card";
+
+          const featuresHTML = Array.isArray(campsite.features)
+            ? campsite.features.map((f) => `<li>${f}</li>`).join("")
+            : (campsite.features || "")
+                .split("\n")
+                .map((f) => `<li>${f.trim()}</li>`)
+                .join("");
+
+          const proposedByText =
+            campsite.proposedBy && campsite.proposedBy !== "System"
+              ? `<p style="font-size: 0.9em; color: #666; font-style: italic;">Proposed by: ${campsite.proposedBy}</p>`
+              : "";
+
+          const additionalInfo = campsite.additionalInfo
+            ? `<p style="margin-top: 10px; font-size: 0.9em; color: #555;">${campsite.additionalInfo}</p>`
+            : "";
+
+          card.innerHTML = `
+            <div class="campsite-image">${campsite.emoji || "🏕️"}</div>
+            <div class="campsite-info">
+              <h3 class="campsite-name">${campsite.name}</h3>
+              <ul class="campsite-features">
+                ${featuresHTML}
+              </ul>
+              <p><strong>Distance:</strong> ${campsite.distance}</p>
+              <p><strong>Cost:</strong> ${campsite.cost}</p>
+              ${additionalInfo}
+              ${proposedByText}
+              <div class="vote-section">
+                <span class="vote-count" id="votes-${
+                  campsite.id
+                }">0 votes</span>
+                <button class="btn" onclick="voteCampsiteEnhanced('${
+                  campsite.id
+                }')">Vote</button>
+              </div>
+            </div>
+          `;
+
+          campsiteGrid.appendChild(card);
+
+          // Load vote count for this campsite
+          loadCampsiteVotes(campsite.id);
+        });
+      }
+
+      // Load vote count for a specific campsite
+      async function loadCampsiteVotes(campsiteId) {
+        try {
+          if (db) {
+            db.collection("campsite_votes")
+              .where("campsite_id", "==", campsiteId)
+              .onSnapshot((snapshot) => {
+                const voteElement = document.getElementById(
+                  `votes-${campsiteId}`
+                );
+                if (voteElement) {
+                  voteElement.textContent = `${snapshot.size} votes`;
+                }
+              });
+          } else {
+            // Local storage fallback
+            const votes = JSON.parse(
+              localStorage.getItem("campsiteVotes") || "{}"
+            );
+            const voteCount = Object.values(votes).filter(
+              (id) => id === campsiteId
+            ).length;
+            const voteElement = document.getElementById(`votes-${campsiteId}`);
+            if (voteElement) {
+              voteElement.textContent = `${voteCount} votes`;
+            }
+          }
+        } catch (error) {
+          console.error("Error loading votes for campsite:", campsiteId, error);
+        }
+      }
+
+      // Modal functions
+      function openProposeCampsiteModal() {
+        const modal = document.getElementById("proposeCampsiteModal");
+        if (modal) {
+          modal.style.display = "block";
+        }
+      }
+
+      function closeProposeCampsiteModal() {
+        const modal = document.getElementById("proposeCampsiteModal");
+        if (modal) {
+          modal.style.display = "none";
+          // Reset form
+          const form = document.getElementById("proposeCampsiteForm");
+          if (form) {
+            form.reset();
+          }
+        }
+      }
+
+      // Handle propose campsite form submission
+      function initializeProposeCampsiteForm() {
+        const form = document.getElementById("proposeCampsiteForm");
+
+        if (!form) {
+          console.error("Propose campsite form not found");
+          return;
+        }
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const name = document.getElementById("campsiteName").value.trim();
+          const emoji =
+            document.getElementById("campsiteEmoji").value.trim() || "🏕️";
+          const featuresText = document
+            .getElementById("campsiteFeatures")
+            .value.trim();
+          const distance = document
+            .getElementById("campsiteDistance")
+            .value.trim();
+          const cost = document.getElementById("campsiteCost").value.trim();
+          const additionalInfo = document
+            .getElementById("campsiteInfo")
+            .value.trim();
+          const proposedBy = document
+            .getElementById("campsiteProposer")
+            .value.trim();
+
+          if (!name || !featuresText || !distance || !cost || !proposedBy) {
+            alert("Please fill in all required fields");
+            return;
+          }
+
+          const features = featuresText
+            .split("\n")
+            .map((f) => f.trim())
+            .filter((f) => f);
+
+          const campsiteData = {
+            name,
+            emoji,
+            features,
+            distance,
+            cost,
+            additionalInfo,
+            proposedBy,
+            timestamp: new Date(),
+          };
+
+          try {
+            await saveCampsite(campsiteData);
+            closeProposeCampsiteModal();
+            alert(
+              "Campsite proposed successfully! It will appear in the list."
+            );
+          } catch (error) {
+            console.error("Error proposing campsite:", error);
+            alert("Error proposing campsite. Please try again.");
+          }
+        });
+      }
+
+      // Save campsite to Firebase or local storage
+      async function saveCampsite(campsiteData) {
+        try {
+          if (db) {
+            await db.collection("campsites").add(campsiteData);
+          } else {
+            // Local storage fallback
+            const campsites = JSON.parse(
+              localStorage.getItem("campsites") || "[]"
+            );
+            campsiteData.id = `campsite-${Date.now()}`;
+            campsites.push(campsiteData);
+            localStorage.setItem("campsites", JSON.stringify(campsites));
+
+            // Trigger display update
+            loadAndDisplayCampsites();
+          }
+        } catch (error) {
+          console.error("Error saving campsite:", error);
+          throw error;
+        }
+      }
+
+      // Enhanced vote function
+      async function voteCampsiteEnhanced(campsiteId) {
+        const voterName = prompt("Enter your name to vote:");
+        if (!voterName) return;
+
+        try {
+          if (db) {
+            // Check if already voted
+            const existingVote = await db
+              .collection("campsite_votes")
+              .where("voter_name", "==", voterName)
+              .get();
+
+            if (!existingVote.empty) {
+              // Update existing vote
+              await existingVote.docs[0].ref.update({
+                campsite_id: campsiteId,
+                timestamp: new Date(),
+              });
+              alert("Your vote has been updated!");
+            } else {
+              // Add new vote
+              await db.collection("campsite_votes").add({
+                campsite_id: campsiteId,
+                voter_name: voterName,
+                timestamp: new Date(),
+              });
+              alert("Vote recorded!");
+            }
+          } else {
+            // Local storage fallback
+            const votes = JSON.parse(
+              localStorage.getItem("campsiteVotes") || "{}"
+            );
+            votes[voterName] = campsiteId;
+            localStorage.setItem("campsiteVotes", JSON.stringify(votes));
+            loadAndDisplayCampsites();
+            alert("Vote recorded!");
+          }
+        } catch (error) {
+          console.error("Error voting:", error);
+          alert("Error recording vote. Please try again.");
+        }
+      }
+
+      // Initialize campsite system
+      function initializeCampsiteSystem() {
+        // Load and display campsites
+        loadAndDisplayCampsites();
+
+        // Set up form handler
+        initializeProposeCampsiteForm();
+
+        // Close modal when clicking outside
+        window.addEventListener("click", function (event) {
+          const modal = document.getElementById("proposeCampsiteModal");
+          if (event.target === modal) {
+            closeProposeCampsiteModal();
+          }
+        });
+      }
+
+      // Call campsite initialization
+      document.addEventListener("DOMContentLoaded", () => {
+        initializeCampsiteSystem();
+      });
     </script>
   </body>
 </html>
