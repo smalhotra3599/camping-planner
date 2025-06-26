@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camp Together - Plan Your Next Adventure</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --forest-green: #2d5a3d;
+        --sage-green: #87a878;
+        --warm-brown: #8b6f47;
+        --sunset-orange: #ff6b35;
+        --cream: #fef9ef;
+        --dark-text: #2c3e50;
+        --light-gray: #f8f9fa;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--dark-text);
+        background-color: var(--cream);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          rgba(45, 90, 61, 0.9),
+          rgba(255, 107, 53, 0.8)
+        );
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "🏕️";
+        position: absolute;
+        font-size: 300px;
+        opacity: 0.1;
+        top: -50px;
+        right: -50px;
+        transform: rotate(-15deg);
+      }
+
+      .hero h1 {
+        font-size: 3.5em;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 1s ease-out;
+      }
+
+      .hero-quote {
+        font-size: 1.4em;
+        font-style: italic;
+        margin-bottom: 30px;
+        opacity: 0.95;
+        animation: fadeInUp 1s ease-out 0.3s both;
+      }
+
+      .activities {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 40px;
+        animation: fadeInUp 1s ease-out 0.6s both;
+      }
+
+      .activity-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 10px 20px;
+        border-radius: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .activity-badge:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      /* Section Styles */
+      .section {
+        padding: 60px 0;
+        animation: fadeIn 0.8s ease-out;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5em;
+        color: var(--forest-green);
+        margin-bottom: 40px;
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: var(--sunset-orange);
+      }
+
+      /* RSVP Section */
+      .rsvp-section {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
+      }
+
+      .rsvp-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .rsvp-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .rsvp-option {
+        padding: 15px;
+        border: 2px solid var(--sage-green);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .rsvp-option:hover {
+        background: var(--sage-green);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .rsvp-option.selected {
+        background: var(--forest-green);
+        color: white;
+        border-color: var(--forest-green);
+      }
+
+      input[type="text"],
+      textarea {
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      input[type="text"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--sage-green);
+      }
+
+      .btn {
+        background: var(--sunset-orange);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background: #e85a2a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+      }
+
+      .attendees-list {
+        margin-top: 40px;
+        padding: 20px;
+        background: var(--light-gray);
+        border-radius: 10px;
+      }
+
+      .attendee {
+        display: inline-block;
+        background: white;
+        padding: 8px 16px;
+        margin: 5px;
+        border-radius: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Date Coordination */
+      .date-section {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .calendly-placeholder {
+        background: var(--light-gray);
+        padding: 60px;
+        border-radius: 10px;
+        margin: 30px 0;
+        border: 2px dashed var(--sage-green);
+      }
+
+      /* Campsite Voting */
+      .campsite-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .campsite-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .campsite-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .campsite-image {
+        width: 100%;
+        height: 200px;
+        background: linear-gradient(
+          135deg,
+          var(--sage-green),
+          var(--forest-green)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4em;
+      }
+
+      .campsite-info {
+        padding: 20px;
+      }
+
+      .campsite-name {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: var(--forest-green);
+        margin-bottom: 10px;
+      }
+
+      .campsite-features {
+        list-style: none;
+        margin: 15px 0;
+      }
+
+      .campsite-features li {
+        padding: 5px 0;
+        position: relative;
+        padding-left: 25px;
+      }
+
+      .campsite-features li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--sage-green);
+        font-weight: bold;
+      }
+
+      .vote-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .vote-count {
+        font-size: 1.2em;
+        color: var(--warm-brown);
+      }
+
+      /* Packing List */
+      .packing-categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .packing-category {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .category-title {
+        font-size: 1.5em;
+        color: var(--forest-green);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .packing-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .packing-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+      }
+
+      .item-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .claimed-by {
+        color: var(--sage-green);
+        font-size: 0.9em;
+        font-style: italic;
+      }
+
+      .add-item-form {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .add-item-form input {
+        flex: 1;
+      }
+
+      /* Additional Features */
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+
+      .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .info-icon {
+        font-size: 3em;
+        margin-bottom: 15px;
+      }
+
+      /* Loading States */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--sunset-orange);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.5em;
+        }
+
+        .hero-quote {
+          font-size: 1.1em;
+        }
+
+        .section-title {
+          font-size: 2em;
+        }
+
+        .rsvp-options {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Connection Status */
+      .connection-status {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--forest-green);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .connection-status.offline {
+        background: var(--sunset-orange);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Camp Together 🏕️</h1>
+        <p class="hero-quote">
+          "The mountains are calling and I must go" - John Muir
+        </p>
+        <p style="font-size: 1.2em; margin-bottom: 30px">
+          Disconnect to reconnect. Plan your perfect outdoor adventure!
+        </p>
+
+        <div class="activities">
+          <div class="activity-badge">🥾 Hiking</div>
+          <div class="activity-badge">⭐ Stargazing</div>
+          <div class="activity-badge">🔥 Campfire Stories</div>
+          <div class="activity-badge">🍫 S'mores</div>
+          <div class="activity-badge">🍺 Drinking</div>
+          <div class="activity-badge">📸 Nature Photography</div>
+          <div class="activity-badge">🎮 Outdoor Games</div>
+          <div class="activity-badge">
+            🦌 Wildlife Spotting (not guaranteed)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RSVP Section -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Are You Coming? 🎉</h2>
+
+        <div class="rsvp-section">
+          <form class="rsvp-form" id="rsvpForm">
+            <input type="text" id="rsvpName" placeholder="Your Name" required />
+
+            <div class="rsvp-options">
+              <div class="rsvp-option" data-status="definitely">
+                <h3>Definitely Coming! 🙌</h3>
+                <p>Count me in!</p>
+              </div>
+              <div class="rsvp-option" data-status="maybe">
+                <h3>Coming if dates work 📅</h3>
+                <p>I'll try my best</p>
+              </div>
+              <div class="rsvp-option" data-status="no">
+                <h3>Can't make it 😢</h3>
+                <p>Next time!</p>
+              </div>
+            </div>
+
+            <textarea
+              id="rsvpComment"
+              placeholder="Any comments or dietary restrictions?"
+              rows="3"
+            ></textarea>
+
+            <button type="submit" class="btn">Submit RSVP</button>
+          </form>
+
+          <div class="attendees-list">
+            <h3>Who's Coming (<span id="attendeeCount">0</span> confirmed)</h3>
+            <div id="attendeesList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Date Coordination -->
+    <section class="section" style="background: var(--light-gray)">
+      <div class="container">
+        <h2 class="section-title">Find the Perfect Dates 📅</h2>
+
+        <div class="date-section">
+          <p style="font-size: 1.2em; margin-bottom: 30px">
+            Let's find dates that work for everyone!
+          </p>
+
+          <div class="calendly-placeholder">
+            <h3>📆 Calendly Widget</h3>
+            <p>Schedule coordination tool will be embedded here</p>
+          </div>
+
+          <button
+            class="btn"
+            onclick="window.open('https://calendly.com', '_blank')"
+          >
+            Check Available Dates on Calendly
+          </button>
+
+          <div style="margin-top: 30px">
+            <h3>Proposed Dates:</h3>
+            <p>June 15-17 • July 6-8 • July 20-22</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Campsite Voting -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Vote for Your Favorite Campsite 🗳️</h2>
+
+        <div class="campsite-grid" id="campsiteGrid">
+          <!-- Campsites will be dynamically loaded -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Packing List -->
+    <section class="section" style="background: var(--light-gray)">
+      <div class="container">
+        <h2 class="section-title">Shared Packing List 🎒</h2>
+
+        <div class="packing-categories" id="packingCategories">
+          <!-- Categories will be dynamically loaded -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Additional Info -->
+    <section class="section">
+      <div class="container">
+        <h2 class="section-title">Essential Information 📍</h2>
+
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-icon">🌤️</div>
+            <h3>Weather Forecast</h3>
+            <p>Sunny with highs of 75°F</p>
+            <p>Perfect camping weather!</p>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">🚗</div>
+            <h3>Carpool Coordination</h3>
+            <p>Share rides and save gas!</p>
+            <button class="btn" style="margin-top: 15px">
+              Sign Up for Carpool
+            </button>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">🚨</div>
+            <h3>Emergency Contacts</h3>
+            <p>Park Ranger: (555) 123-4567</p>
+            <p>Local Hospital: (555) 987-6543</p>
+          </div>
+
+          <div class="info-card">
+            <div class="info-icon">💡</div>
+            <h3>First Timer Tips</h3>
+            <p>New to camping? We've got you covered!</p>
+            <ul style="text-align: left; margin-top: 10px">
+              <li>Dress in layers</li>
+              <li>Bring extra socks</li>
+              <li>Don't forget bug spray!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connection Status -->
+    <div class="connection-status" id="connectionStatus">
+      <span class="status-icon">🟢</span>
+      <span class="status-text">Connected</span>
+    </div>
+
+    <script>
+      // Firebase Configuration - Replace with your config
+      const firebaseConfig = {
+        // Replace these placeholder values with your actual Firebase config
+        // You can find these values in your Firebase project settings
+        // For security, these should be loaded from environment variables in production
+        apiKey: "YOUR_API_KEY_HERE",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID",
+        measurementId: "YOUR_MEASUREMENT_ID",
+      };
+
+      // Initialize Firebase
+      let db;
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+
+        // Enable offline persistence
+        db.enablePersistence().catch((err) => {
+          if (err.code == "failed-precondition") {
+            console.log(
+              "Multiple tabs open, persistence can only be enabled in one tab at a time."
+            );
+          } else if (err.code == "unimplemented") {
+            console.log(
+              "The current browser does not support offline persistence"
+            );
+          }
+        });
+      } catch (error) {
+        console.log("Firebase initialization error:", error);
+        // Continue with local storage fallback
+      }
+
+      // Connection status monitoring
+      let isOnline = true;
+      function updateConnectionStatus(online) {
+        isOnline = online;
+        const statusEl = document.getElementById("connectionStatus");
+        const statusIcon = statusEl.querySelector(".status-icon");
+        const statusText = statusEl.querySelector(".status-text");
+
+        if (online) {
+          statusEl.classList.remove("offline");
+          statusIcon.textContent = "🟢";
+          statusText.textContent = "Connected";
+          statusEl.style.display = "none";
+        } else {
+          statusEl.classList.add("offline");
+          statusIcon.textContent = "🔴";
+          statusText.textContent =
+            "Offline - Changes will sync when reconnected";
+          statusEl.style.display = "flex";
+        }
+      }
+
+      // Monitor online/offline status
+      window.addEventListener("online", () => updateConnectionStatus(true));
+      window.addEventListener("offline", () => updateConnectionStatus(false));
+
+      // RSVP System
+      const rsvpForm = document.getElementById("rsvpForm");
+      const rsvpOptions = document.querySelectorAll(".rsvp-option");
+      let selectedStatus = null;
+
+      rsvpOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+          option.classList.add("selected");
+          selectedStatus = option.dataset.status;
+        });
+      });
+
+      rsvpForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("rsvpName").value;
+        const comment = document.getElementById("rsvpComment").value;
+
+        if (!selectedStatus) {
+          alert("Please select your RSVP status");
+          return;
+        }
+
+        const rsvpData = {
+          name,
+          status: selectedStatus,
+          comment,
+          timestamp: new Date(),
+        };
+
+        try {
+          if (db) {
+            await db.collection("rsvps").add(rsvpData);
+          } else {
+            // Fallback to local storage
+            const rsvps = JSON.parse(
+              localStorage.getItem("campingRsvps") || "[]"
+            );
+            rsvps.push(rsvpData);
+            localStorage.setItem("campingRsvps", JSON.stringify(rsvps));
+            updateAttendeesDisplay();
+          }
+
+          // Reset form
+          rsvpForm.reset();
+          rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+          selectedStatus = null;
+
+          alert("RSVP submitted successfully!");
+        } catch (error) {
+          console.error("Error submitting RSVP:", error);
+          alert("Error submitting RSVP. Please try again.");
+        }
+      });
+
+      // Real-time RSVP updates
+      function listenToRSVPs() {
+        if (db) {
+          db.collection("rsvps")
+            .orderBy("timestamp", "desc")
+            .onSnapshot((snapshot) => {
+              const rsvps = [];
+              snapshot.forEach((doc) => {
+                rsvps.push({ id: doc.id, ...doc.data() });
+              });
+              displayAttendees(rsvps);
+            });
+        } else {
+          // Fallback to local storage
+          updateAttendeesDisplay();
+        }
+      }
+
+      function updateAttendeesDisplay() {
+        const rsvps = JSON.parse(localStorage.getItem("campingRsvps") || "[]");
+        displayAttendees(rsvps);
+      }
+
+      function displayAttendees(rsvps) {
+        const attendeesList = document.getElementById("attendeesList");
+        const attendeeCount = document.getElementById("attendeeCount");
+
+        const confirmed = rsvps.filter((r) => r.status === "definitely");
+        attendeeCount.textContent = confirmed.length;
+
+        attendeesList.innerHTML = confirmed
+          .map((attendee) => `<span class="attendee">${attendee.name} ✓</span>`)
+          .join("");
+      }
+
+      // Campsite Data
+      const campsites = [
+        {
+          id: "pine-grove",
+          name: "Pine Grove Campground",
+          emoji: "🌲",
+          features: [
+            "Lake access",
+            "Hot showers",
+            "Fire pits",
+            "Hiking trails",
+          ],
+          distance: "45 miles",
+          cost: "$25/night",
+        },
+        {
+          id: "mountain-view",
+          name: "Mountain View Site",
+          emoji: "⛰️",
+          features: [
+            "Scenic views",
+            "Rock climbing",
+            "Stargazing deck",
+            "Group shelter",
+          ],
+          distance: "72 miles",
+          cost: "$30/night",
+        },
+        {
+          id: "riverside",
+          name: "Riverside Retreat",
+          emoji: "🏞️",
+          features: ["River access", "Fishing", "Kayak rentals", "Beach area"],
+          distance: "58 miles",
+          cost: "$28/night",
+        },
+      ];
+
+      // Display campsites
+      function displayCampsites() {
+        const campsiteGrid = document.getElementById("campsiteGrid");
+
+        campsites.forEach((campsite) => {
+          const card = document.createElement("div");
+          card.className = "campsite-card";
+          card.innerHTML = `
+                    <div class="campsite-image">${campsite.emoji}</div>
+                    <div class="campsite-info">
+                        <h3 class="campsite-name">${campsite.name}</h3>
+                        <ul class="campsite-features">
+                            ${campsite.features
+                              .map((f) => `<li>${f}</li>`)
+                              .join("")}
+                        </ul>
+                        <p><strong>Distance:</strong> ${campsite.distance}</p>
+                        <p><strong>Cost:</strong> ${campsite.cost}</p>
+                        <div class="vote-section">
+                            <span class="vote-count" id="votes-${
+                              campsite.id
+                            }">0 votes</span>
+                            <button class="btn" onclick="voteCampsite('${
+                              campsite.id
+                            }')">Vote</button>
+                        </div>
+                    </div>
+                `;
+          campsiteGrid.appendChild(card);
+        });
+
+        // Listen to vote updates
+        if (db) {
+          campsites.forEach((campsite) => {
+            db.collection("campsite_votes")
+              .where("campsite_id", "==", campsite.id)
+              .onSnapshot((snapshot) => {
+                document.getElementById(
+                  `votes-${campsite.id}`
+                ).textContent = `${snapshot.size} votes`;
+              });
+          });
+        }
+      }
+
+      // Vote for campsite
+      async function voteCampsite(campsiteId) {
+        const voterName = prompt("Enter your name to vote:");
+        if (!voterName) return;
+
+        try {
+          if (db) {
+            // Check if already voted
+            const existingVote = await db
+              .collection("campsite_votes")
+              .where("voter_name", "==", voterName)
+              .get();
+
+            if (!existingVote.empty) {
+              // Update existing vote
+              await existingVote.docs[0].ref.update({
+                campsite_id: campsiteId,
+                timestamp: new Date(),
+              });
+            } else {
+              // Add new vote
+              await db.collection("campsite_votes").add({
+                campsite_id: campsiteId,
+                voter_name: voterName,
+                timestamp: new Date(),
+              });
+            }
+          } else {
+            // Local storage fallback
+            const votes = JSON.parse(
+              localStorage.getItem("campsiteVotes") || "{}"
+            );
+            votes[voterName] = campsiteId;
+            localStorage.setItem("campsiteVotes", JSON.stringify(votes));
+            updateVoteDisplay();
+          }
+
+          alert("Vote recorded!");
+        } catch (error) {
+          console.error("Error voting:", error);
+          alert("Error recording vote. Please try again.");
+        }
+      }
+
+      function updateVoteDisplay() {
+        const votes = JSON.parse(localStorage.getItem("campsiteVotes") || "{}");
+        const voteCounts = {};
+
+        Object.values(votes).forEach((campsiteId) => {
+          voteCounts[campsiteId] = (voteCounts[campsiteId] || 0) + 1;
+        });
+
+        campsites.forEach((campsite) => {
+          const count = voteCounts[campsite.id] || 0;
+          document.getElementById(
+            `votes-${campsite.id}`
+          ).textContent = `${count} votes`;
+        });
+      }
+
+      // Packing List Categories
+      const packingCategories = [
+        {
+          name: "Camp Equipment",
+          icon: "⛺",
+          items: [
+            { name: "Tents (4-person)", quantity: 3, claimed_by: null },
+            { name: "Sleeping bags", quantity: 10, claimed_by: null },
+            { name: "Camping chairs", quantity: 10, claimed_by: null },
+            { name: "Lanterns", quantity: 4, claimed_by: null },
+            { name: "Cooler", quantity: 2, claimed_by: null },
+            { name: "Camp stove", quantity: 2, claimed_by: null },
+            { name: "First aid kit", quantity: 1, claimed_by: null },
+          ],
+        },
+        {
+          name: "Food & Drinks",
+          icon: "🍔",
+          items: [
+            { name: "Hot dogs", quantity: 30, claimed_by: null },
+            { name: "Burgers", quantity: 20, claimed_by: null },
+            { name: "S'mores supplies", quantity: 1, claimed_by: null },
+            { name: "Water bottles", quantity: 48, claimed_by: null },
+            { name: "Snacks", quantity: 10, claimed_by: null },
+            { name: "Coffee", quantity: 2, claimed_by: null },
+          ],
+        },
+        {
+          name: "Personal Items",
+          icon: "🎒",
+          items: [
+            { name: "Bug spray", quantity: 5, claimed_by: null },
+            { name: "Sunscreen", quantity: 5, claimed_by: null },
+            { name: "Flashlights", quantity: 10, claimed_by: null },
+            { name: "Portable chargers", quantity: 5, claimed_by: null },
+            { name: "Toiletries", quantity: 1, claimed_by: null },
+          ],
+        },
+      ];
+
+      // Display packing lists
+      function displayPackingLists() {
+        const container = document.getElementById("packingCategories");
+
+        packingCategories.forEach((category, catIndex) => {
+          const categoryDiv = document.createElement("div");
+          categoryDiv.className = "packing-category";
+          categoryDiv.innerHTML = `
+                    <h3 class="category-title">
+                        <span>${category.icon}</span>
+                        ${category.name}
+                    </h3>
+                    <div id="items-${catIndex}"></div>
+                    <form class="add-item-form" onsubmit="addPackingItem(event, ${catIndex})">
+                        <input type="text" placeholder="Add new item..." required>
+                        <button type="submit" class="btn">Add</button>
+                    </form>
+                `;
+          container.appendChild(categoryDiv);
+
+          // Display items
+          displayCategoryItems(catIndex);
+        });
+
+        // Listen to packing list updates
+        if (db) {
+          db.collection("packing_items").onSnapshot(() => {
+            packingCategories.forEach((_, index) => {
+              displayCategoryItems(index);
+            });
+          });
+        }
+      }
+
+      async function displayCategoryItems(categoryIndex) {
+        const category = packingCategories[categoryIndex];
+        const container = document.getElementById(`items-${categoryIndex}`);
+
+        let items = category.items;
+
+        if (db) {
+          try {
+            const snapshot = await db
+              .collection("packing_items")
+              .where("category", "==", category.name)
+              .get();
+
+            const dbItems = [];
+            snapshot.forEach((doc) => {
+              dbItems.push({ id: doc.id, ...doc.data() });
+            });
+
+            if (dbItems.length > 0) {
+              items = dbItems;
+            }
+          } catch (error) {
+            console.error("Error fetching packing items:", error);
+          }
+        }
+
+        container.innerHTML = items
+          .map(
+            (item) => `
+                <div class="packing-item">
+                    <div class="item-info">
+                        <input type="checkbox" class="item-checkbox" 
+                               ${item.claimed_by ? "checked" : ""}
+                               onchange="toggleItemClaim('${item.name}', '${
+              category.name
+            }', this.checked)">
+                        <span>${item.name} ${
+              item.quantity > 1 ? `(${item.quantity})` : ""
+            }</span>
+                        ${
+                          item.claimed_by
+                            ? `<span class="claimed-by">- ${item.claimed_by}</span>`
+                            : ""
+                        }
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      async function toggleItemClaim(itemName, categoryName, claimed) {
+        const claimerName = claimed ? prompt("Enter your name:") : null;
+
+        if (claimed && !claimerName) {
+          event.target.checked = false;
+          return;
+        }
+
+        try {
+          if (db) {
+            const itemQuery = await db
+              .collection("packing_items")
+              .where("name", "==", itemName)
+              .where("category", "==", categoryName)
+              .get();
+
+            if (!itemQuery.empty) {
+              await itemQuery.docs[0].ref.update({
+                claimed_by: claimerName,
+              });
+            } else {
+              // Add new item if not exists
+              await db.collection("packing_items").add({
+                name: itemName,
+                category: categoryName,
+                quantity: 1,
+                claimed_by: claimerName,
+                timestamp: new Date(),
+              });
+            }
+          } else {
+            // Local storage fallback
+            const claims = JSON.parse(
+              localStorage.getItem("packingClaims") || "{}"
+            );
+            const key = `${categoryName}-${itemName}`;
+
+            if (claimed) {
+              claims[key] = claimerName;
+            } else {
+              delete claims[key];
+            }
+
+            localStorage.setItem("packingClaims", JSON.stringify(claims));
+            displayCategoryItems(
+              packingCategories.findIndex((c) => c.name === categoryName)
+            );
+          }
+        } catch (error) {
+          console.error("Error updating item:", error);
+          alert("Error updating item. Please try again.");
+          event.target.checked = !claimed;
+        }
+      }
+
+      async function addPackingItem(event, categoryIndex) {
+        event.preventDefault();
+
+        const form = event.target;
+        const input = form.querySelector("input");
+        const itemName = input.value.trim();
+
+        if (!itemName) return;
+
+        const category = packingCategories[categoryIndex];
+
+        try {
+          if (db) {
+            await db.collection("packing_items").add({
+              name: itemName,
+              category: category.name,
+              quantity: 1,
+              claimed_by: null,
+              timestamp: new Date(),
+            });
+          } else {
+            // Local storage fallback
+            category.items.push({
+              name: itemName,
+              quantity: 1,
+              claimed_by: null,
+            });
+            displayCategoryItems(categoryIndex);
+          }
+
+          input.value = "";
+        } catch (error) {
+          console.error("Error adding item:", error);
+          alert("Error adding item. Please try again.");
+        }
+      }
+
+      // Initialize everything
+      document.addEventListener("DOMContentLoaded", () => {
+        listenToRSVPs();
+        displayCampsites();
+        displayPackingLists();
+
+        // Check initial connection status
+        updateConnectionStatus(navigator.onLine);
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute("href"));
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth" });
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
