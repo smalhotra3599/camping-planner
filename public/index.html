@@ -1868,9 +1868,14 @@
         tbody.innerHTML = rsvps
           .map((rsvp) => {
             return `
-              <tr onclick="openEditModal('${rsvp.email}', '${rsvp.name}', '${
-              rsvp.status
-            }', '${(rsvp.comment || "").replace(/'/g, "&#39;")}')">
+              <tr class="rsvp-row" 
+                  data-email="${rsvp.email}" 
+                  data-name="${rsvp.name}" 
+                  data-status="${rsvp.status}" 
+                  data-comment="${(rsvp.comment || "").replace(
+                    /"/g,
+                    "&quot;"
+                  )}">
                 <td><strong>${rsvp.name}</strong></td>
                 <td>${rsvp.email}</td>
                 <td>
@@ -1883,6 +1888,25 @@
             `;
           })
           .join("");
+      }
+
+      // Add event listener for RSVP table rows (replaces inline onclick)
+      function initializeRSVPTableEvents() {
+        const rsvpTableBody = document.getElementById("rsvpTableBody");
+
+        if (rsvpTableBody) {
+          rsvpTableBody.addEventListener("click", function (event) {
+            const row = event.target.closest(".rsvp-row");
+            if (row) {
+              const email = row.dataset.email;
+              const name = row.dataset.name;
+              const status = row.dataset.status;
+              const comment = row.dataset.comment.replace(/&quot;/g, '"');
+
+              openEditModal(email, name, status, comment);
+            }
+          });
+        }
       }
 
       // Modal functions
@@ -2296,6 +2320,9 @@
       document.addEventListener("DOMContentLoaded", () => {
         // Initialize RSVP options first
         initializeRSVPOptions();
+
+        // Initialize RSVP table events
+        initializeRSVPTableEvents();
 
         listenToRSVPs();
         displayCampsites();
