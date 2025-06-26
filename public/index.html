@@ -2076,7 +2076,9 @@
                               .map((f) => `<li>${f}</li>`)
                               .join("")}
                         </ul>
-                        <p><strong>Location:</strong> ${campsite.location || campsite.distance}</p>
+                        <p><strong>Location:</strong> ${
+                          campsite.location || campsite.distance
+                        }</p>
                         <p><strong>Cost:</strong> ${campsite.cost}</p>
                         <div class="vote-section">
                             <span class="vote-count" id="votes-${
@@ -3154,7 +3156,9 @@
               <ul class="campsite-features">
                 ${featuresHTML}
               </ul>
-              <p><strong>Location:</strong> ${campsite.location || campsite.distance}</p>
+              <p><strong>Location:</strong> ${
+                campsite.location || campsite.distance
+              }</p>
               <p><strong>Cost:</strong> ${campsite.cost}</p>
               ${websiteLink}
               ${additionalInfo}
@@ -3176,7 +3180,9 @@
                 </span>
                 <div style="display: flex; gap: 10px;">
                   <button class="${buttonClass}" id="btn-${campsite.id}" 
-                          onclick="voteCampsiteEnhanced('${campsite.id}')">${buttonText}</button>
+                          onclick="voteCampsiteEnhanced('${
+                            campsite.id
+                          }')">${buttonText}</button>
                   ${deleteButton}
                 </div>
               </div>
