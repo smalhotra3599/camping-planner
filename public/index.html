@@ -1569,6 +1569,133 @@
       </div>
     </section>
 
+    <!-- Edit Campsite Modal -->
+    <div class="modal" id="editCampsiteModal">
+      <div class="modal-content">
+        <h3>Edit Campsite 🏕️</h3>
+        <form id="editCampsiteForm">
+          <input type="hidden" id="editCampsiteId" />
+
+          <input
+            type="text"
+            id="editCampsiteName"
+            placeholder="Campsite Name"
+            required
+            style="margin-bottom: 15px"
+          />
+
+          <div style="margin-bottom: 15px">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold"
+              >Image URL (optional):</label
+            >
+            <input
+              type="url"
+              id="editCampsiteImageUrl"
+              placeholder="https://example.com/campsite-photo.jpg"
+              style="
+                padding: 12px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 16px;
+                transition: border-color 0.3s ease;
+                width: 100%;
+                box-sizing: border-box;
+              "
+            />
+          </div>
+
+          <div style="margin-bottom: 15px">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold"
+              >Website (optional):</label
+            >
+            <input
+              type="url"
+              id="editCampsiteWebsite"
+              placeholder="https://www.campsitename.com"
+              style="
+                padding: 12px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 16px;
+                transition: border-color 0.3s ease;
+                width: 100%;
+                box-sizing: border-box;
+              "
+            />
+          </div>
+
+          <div style="margin-bottom: 15px">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold"
+              >Features (one per line):</label
+            >
+            <textarea
+              id="editCampsiteFeatures"
+              placeholder="Lake access&#10;Hot showers&#10;Fire pits&#10;Hiking trails"
+              rows="4"
+              required
+            ></textarea>
+          </div>
+
+          <div style="display: flex; gap: 15px; margin-bottom: 15px">
+            <div style="flex: 1">
+              <label
+                style="display: block; margin-bottom: 5px; font-weight: bold"
+                >Location:</label
+              >
+              <input
+                type="text"
+                id="editCampsiteLocation"
+                placeholder="Yosemite National Park, CA"
+                required
+              />
+            </div>
+            <div style="flex: 1">
+              <label
+                style="display: block; margin-bottom: 5px; font-weight: bold"
+                >Cost:</label
+              >
+              <input
+                type="text"
+                id="editCampsiteCost"
+                placeholder="$25/night"
+                required
+              />
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold"
+              >Additional Info (optional):</label
+            >
+            <textarea
+              id="editCampsiteInfo"
+              placeholder="Any additional details or special notes..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="modal-buttons">
+            <button type="submit" class="btn">Update Campsite</button>
+            <button
+              type="button"
+              class="btn"
+              style="background: #dc3545; margin-left: 10px"
+              onclick="deleteCampsiteFromEdit()"
+            >
+              Delete Campsite
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="closeEditCampsiteModal()"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Packing List -->
     <section class="section" style="background: var(--light-gray)">
       <div class="container">
@@ -3143,6 +3270,19 @@
             ? `<button class="btn" style="background: #dc3545; margin-left: 10px;" onclick="deleteCampsite('${campsite.id}')">Delete</button>`
             : "";
 
+          // Check if current user can edit this campsite
+          const canEdit =
+            currentUser && currentUser.email === campsite.proposedByEmail;
+          const editButton = canEdit
+            ? `<button class="edit-campsite-btn" onclick="openEditCampsiteModal('${campsite.id}')" 
+                      style="position: absolute; top: 10px; right: 10px; background: var(--forest-green); 
+                             border: none; border-radius: 50%; width: 35px; height: 35px; 
+                             color: white; cursor: pointer; display: flex; align-items: center; 
+                             justify-content: center; font-size: 14px; z-index: 10; 
+                             transition: all 0.3s ease;" 
+                      title="Edit campsite">✏️</button>`
+            : "";
+
           // Handle image display
           const imageDisplay = campsite.imageUrl
             ? `<img src="${campsite.imageUrl}" alt="${campsite.name}" style="width: 100%; height: 200px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -3150,7 +3290,7 @@
             : `<div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--sage-green), var(--forest-green)); display: flex; align-items: center; justify-content: center; font-size: 4em;">🏕️</div>`;
 
           card.innerHTML = `
-            <div class="campsite-image">${imageDisplay}</div>
+            <div class="campsite-image" style="position: relative;">${imageDisplay}${editButton}</div>
             <div class="campsite-info">
               <h3 class="campsite-name">${campsite.name}</h3>
               <ul class="campsite-features">
@@ -3178,13 +3318,10 @@
                     No votes yet
                   </div>
                 </span>
-                <div style="display: flex; gap: 10px;">
-                  <button class="${buttonClass}" id="btn-${campsite.id}" 
-                          onclick="voteCampsiteEnhanced('${
-                            campsite.id
-                          }')">${buttonText}</button>
-                  ${deleteButton}
-                </div>
+                <button class="${buttonClass}" id="btn-${campsite.id}" 
+                        onclick="voteCampsiteEnhanced('${
+                          campsite.id
+                        }')">${buttonText}</button>
               </div>
             </div>
           `;
@@ -3533,14 +3670,21 @@
         // Load and display campsites
         loadAndDisplayCampsites();
 
-        // Set up form handler
+        // Set up form handlers
         initializeProposeCampsiteForm();
+        initializeEditCampsiteForm();
 
-        // Close modal when clicking outside
+        // Close modals when clicking outside
         window.addEventListener("click", function (event) {
-          const modal = document.getElementById("proposeCampsiteModal");
-          if (event.target === modal) {
+          const proposeModal = document.getElementById("proposeCampsiteModal");
+          const editModal = document.getElementById("editCampsiteModal");
+
+          if (event.target === proposeModal) {
             closeProposeCampsiteModal();
+          }
+
+          if (event.target === editModal) {
+            closeEditCampsiteModal();
           }
         });
       }
@@ -3639,6 +3783,190 @@
         } catch (error) {
           console.error("Error deleting campsite:", error);
           alert("Error deleting campsite. Please try again.");
+        }
+      }
+
+      // Edit campsite modal functions
+      async function openEditCampsiteModal(campsiteId) {
+        if (!currentUser) {
+          alert("Please set your identity first!");
+          return;
+        }
+
+        try {
+          // Get campsite data
+          let campsite = null;
+          if (db) {
+            const doc = await db.collection("campsites").doc(campsiteId).get();
+            if (doc.exists) {
+              campsite = { id: doc.id, ...doc.data() };
+            }
+          } else {
+            // Local storage fallback
+            const campsites = JSON.parse(
+              localStorage.getItem("campsites") || "[]"
+            );
+            campsite = campsites.find((c) => c.id === campsiteId);
+          }
+
+          if (!campsite) {
+            alert("Campsite not found.");
+            return;
+          }
+
+          if (campsite.proposedByEmail !== currentUser.email) {
+            alert("You can only edit campsites you created.");
+            return;
+          }
+
+          // Populate the edit modal with existing data
+          document.getElementById("editCampsiteId").value = campsiteId;
+          document.getElementById("editCampsiteName").value =
+            campsite.name || "";
+          document.getElementById("editCampsiteImageUrl").value =
+            campsite.imageUrl || "";
+          document.getElementById("editCampsiteWebsite").value =
+            campsite.website || "";
+
+          // Handle features array or string
+          const featuresText = Array.isArray(campsite.features)
+            ? campsite.features.join("\n")
+            : (campsite.features || "").split("\n").join("\n");
+          document.getElementById("editCampsiteFeatures").value = featuresText;
+
+          document.getElementById("editCampsiteLocation").value =
+            campsite.location || campsite.distance || "";
+          document.getElementById("editCampsiteCost").value =
+            campsite.cost || "";
+          document.getElementById("editCampsiteInfo").value =
+            campsite.additionalInfo || "";
+
+          // Show the modal
+          document.getElementById("editCampsiteModal").style.display = "block";
+        } catch (error) {
+          console.error("Error opening edit modal:", error);
+          alert("Error loading campsite data. Please try again.");
+        }
+      }
+
+      function closeEditCampsiteModal() {
+        const modal = document.getElementById("editCampsiteModal");
+        if (modal) {
+          modal.style.display = "none";
+          // Reset form
+          const form = document.getElementById("editCampsiteForm");
+          if (form) {
+            form.reset();
+          }
+        }
+      }
+
+      // Handle edit campsite form submission
+      function initializeEditCampsiteForm() {
+        const form = document.getElementById("editCampsiteForm");
+
+        if (!form) {
+          console.error("Edit campsite form not found");
+          return;
+        }
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          if (!currentUser) {
+            alert("Please set your identity first!");
+            return;
+          }
+
+          const campsiteId = document.getElementById("editCampsiteId").value;
+          const name = document.getElementById("editCampsiteName").value.trim();
+          const imageUrl = document
+            .getElementById("editCampsiteImageUrl")
+            .value.trim();
+          const website = document
+            .getElementById("editCampsiteWebsite")
+            .value.trim();
+          const featuresText = document
+            .getElementById("editCampsiteFeatures")
+            .value.trim();
+          const location = document
+            .getElementById("editCampsiteLocation")
+            .value.trim();
+          const cost = document.getElementById("editCampsiteCost").value.trim();
+          const additionalInfo = document
+            .getElementById("editCampsiteInfo")
+            .value.trim();
+
+          if (!name || !featuresText || !location || !cost) {
+            alert("Please fill in all required fields");
+            return;
+          }
+
+          const features = featuresText
+            .split("\n")
+            .map((f) => f.trim())
+            .filter((f) => f);
+
+          const updatedCampsiteData = {
+            name,
+            imageUrl,
+            website,
+            features,
+            location,
+            cost,
+            additionalInfo,
+            proposedBy: currentUser.name,
+            proposedByEmail: currentUser.email,
+            timestamp: new Date(),
+          };
+
+          try {
+            await updateCampsite(campsiteId, updatedCampsiteData);
+            closeEditCampsiteModal();
+            alert("Campsite updated successfully!");
+          } catch (error) {
+            console.error("Error updating campsite:", error);
+            alert("Error updating campsite. Please try again.");
+          }
+        });
+      }
+
+      // Update campsite in Firebase or local storage
+      async function updateCampsite(campsiteId, campsiteData) {
+        try {
+          if (db) {
+            await db
+              .collection("campsites")
+              .doc(campsiteId)
+              .update(campsiteData);
+          } else {
+            // Local storage fallback
+            const campsites = JSON.parse(
+              localStorage.getItem("campsites") || "[]"
+            );
+            const index = campsites.findIndex((c) => c.id === campsiteId);
+
+            if (index !== -1) {
+              campsites[index] = { ...campsites[index], ...campsiteData };
+              localStorage.setItem("campsites", JSON.stringify(campsites));
+              // Trigger display update
+              loadAndDisplayCampsites();
+            } else {
+              throw new Error("Campsite not found in local storage");
+            }
+          }
+        } catch (error) {
+          console.error("Error updating campsite:", error);
+          throw error;
+        }
+      }
+
+      // Delete campsite from edit modal
+      async function deleteCampsiteFromEdit() {
+        const campsiteId = document.getElementById("editCampsiteId").value;
+        if (campsiteId) {
+          await deleteCampsite(campsiteId);
+          closeEditCampsiteModal();
         }
       }
     </script>
