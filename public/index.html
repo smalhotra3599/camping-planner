@@ -856,6 +856,7 @@
         border-radius: 10px;
         text-align: center;
         box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+        position: relative;
       }
 
       .popular-weekend-card .weekend-dates {
@@ -866,6 +867,41 @@
       .popular-weekend-card .participant-count {
         font-size: 0.9em;
         opacity: 0.9;
+      }
+
+      /* Tooltip for popular weekend cards */
+      .popular-weekend-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        white-space: nowrap;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        margin-bottom: 5px;
+      }
+
+      .popular-weekend-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.9);
+      }
+
+      .popular-weekend-card:hover .popular-weekend-tooltip {
+        opacity: 1;
+        visibility: visible;
       }
 
       .weekend-grid-container {
@@ -2528,10 +2564,17 @@
               day: "numeric",
             });
 
+            const participants = weekendParticipants[weekendId] || [];
+            const tooltipText =
+              participants.length > 0
+                ? `Available: ${participants.join(", ")}`
+                : "No one available yet";
+
             return `
             <div class="popular-weekend-card">
               <div class="weekend-dates">${fridayStr} - ${sundayStr}</div>
               <div class="participant-count">${count} people available</div>
+              <div class="popular-weekend-tooltip">${tooltipText}</div>
             </div>
           `;
           })
