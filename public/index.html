@@ -1460,7 +1460,15 @@
                   type="url"
                   id="campsiteImageUrl"
                   placeholder="https://example.com/campsite-photo.jpg"
-                  style="width: 100%"
+                  style="
+                    padding: 12px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    transition: border-color 0.3s ease;
+                    width: 100%;
+                    box-sizing: border-box;
+                  "
                 />
               </div>
 
@@ -1473,7 +1481,15 @@
                   type="url"
                   id="campsiteWebsite"
                   placeholder="https://www.campsitename.com"
-                  style="width: 100%"
+                  style="
+                    padding: 12px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    transition: border-color 0.3s ease;
+                    width: 100%;
+                    box-sizing: border-box;
+                  "
                 />
               </div>
 
@@ -1498,12 +1514,12 @@
                       margin-bottom: 5px;
                       font-weight: bold;
                     "
-                    >Distance:</label
+                    >Location:</label
                   >
                   <input
                     type="text"
-                    id="campsiteDistance"
-                    placeholder="45 miles"
+                    id="campsiteLocation"
+                    placeholder="Yosemite National Park, CA"
                     required
                   />
                 </div>
@@ -2060,7 +2076,7 @@
                               .map((f) => `<li>${f}</li>`)
                               .join("")}
                         </ul>
-                        <p><strong>Distance:</strong> ${campsite.distance}</p>
+                        <p><strong>Location:</strong> ${campsite.location || campsite.distance}</p>
                         <p><strong>Cost:</strong> ${campsite.cost}</p>
                         <div class="vote-section">
                             <span class="vote-count" id="votes-${
@@ -3138,7 +3154,7 @@
               <ul class="campsite-features">
                 ${featuresHTML}
               </ul>
-              <p><strong>Distance:</strong> ${campsite.distance}</p>
+              <p><strong>Location:</strong> ${campsite.location || campsite.distance}</p>
               <p><strong>Cost:</strong> ${campsite.cost}</p>
               ${websiteLink}
               ${additionalInfo}
@@ -3368,8 +3384,8 @@
           const featuresText = document
             .getElementById("campsiteFeatures")
             .value.trim();
-          const distance = document
-            .getElementById("campsiteDistance")
+          const location = document
+            .getElementById("campsiteLocation")
             .value.trim();
           const cost = document.getElementById("campsiteCost").value.trim();
           const additionalInfo = document
@@ -3377,7 +3393,7 @@
             .value.trim();
           const proposedBy = currentUser.name;
 
-          if (!name || !featuresText || !distance || !cost) {
+          if (!name || !featuresText || !location || !cost) {
             alert("Please fill in all required fields");
             return;
           }
@@ -3392,7 +3408,7 @@
             imageUrl,
             website,
             features,
-            distance,
+            location,
             cost,
             additionalInfo,
             proposedBy,
