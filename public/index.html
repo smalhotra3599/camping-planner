@@ -1405,6 +1405,26 @@
       <div class="container">
         <h2 class="section-title">Vote for Your Favorite Campsite 🗳️</h2>
 
+        <div
+          id="campsiteIdentityReminder"
+          style="
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            color: #856404;
+          "
+        >
+          <p>
+            <strong
+              >💡 Set your identity above to vote for campsites and propose new
+              ones!</strong
+            >
+          </p>
+        </div>
+
         <div style="text-align: center; margin-bottom: 30px">
           <p style="font-size: 1.1em; margin-bottom: 20px">
             Vote for your preferred campsite or propose a new option!
@@ -1503,19 +1523,6 @@
                   placeholder="Any additional details, website links, or special notes..."
                   rows="3"
                 ></textarea>
-              </div>
-
-              <div style="margin-bottom: 20px">
-                <label
-                  style="display: block; margin-bottom: 5px; font-weight: bold"
-                  >Your Name:</label
-                >
-                <input
-                  type="text"
-                  id="campsiteProposer"
-                  placeholder="Who's proposing this campsite?"
-                  required
-                />
               </div>
 
               <div class="modal-buttons">
@@ -2477,6 +2484,9 @@
           document.getElementById("currentUserDisplay");
         const currentUserName = document.getElementById("currentUserName");
         const identityReminder = document.getElementById("identityReminder");
+        const campsiteIdentityReminder = document.getElementById(
+          "campsiteIdentityReminder"
+        );
 
         if (currentUser) {
           userSelect.style.display = "none";
@@ -2485,11 +2495,17 @@
           if (identityReminder) {
             identityReminder.style.display = "none";
           }
+          if (campsiteIdentityReminder) {
+            campsiteIdentityReminder.style.display = "none";
+          }
         } else {
           userSelect.style.display = "block";
           currentUserDisplay.style.display = "none";
           if (identityReminder) {
             identityReminder.style.display = "block";
+          }
+          if (campsiteIdentityReminder) {
+            campsiteIdentityReminder.style.display = "block";
           }
         }
       }
@@ -3162,6 +3178,11 @@
 
       // Modal functions
       function openProposeCampsiteModal() {
+        if (!currentUser) {
+          alert("Please set your identity first!");
+          return;
+        }
+
         const modal = document.getElementById("proposeCampsiteModal");
         if (modal) {
           modal.style.display = "block";
@@ -3192,6 +3213,11 @@
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
 
+          if (!currentUser) {
+            alert("Please set your identity first!");
+            return;
+          }
+
           const name = document.getElementById("campsiteName").value.trim();
           const emoji =
             document.getElementById("campsiteEmoji").value.trim() || "🏕️";
@@ -3205,11 +3231,9 @@
           const additionalInfo = document
             .getElementById("campsiteInfo")
             .value.trim();
-          const proposedBy = document
-            .getElementById("campsiteProposer")
-            .value.trim();
+          const proposedBy = currentUser.name;
 
-          if (!name || !featuresText || !distance || !cost || !proposedBy) {
+          if (!name || !featuresText || !distance || !cost) {
             alert("Please fill in all required fields");
             return;
           }
@@ -3227,6 +3251,7 @@
             cost,
             additionalInfo,
             proposedBy,
+            proposedByEmail: currentUser.email,
             timestamp: new Date(),
           };
 
@@ -3268,8 +3293,12 @@
 
       // Enhanced vote function
       async function voteCampsiteEnhanced(campsiteId) {
-        const voterName = prompt("Enter your name to vote:");
-        if (!voterName) return;
+        if (!currentUser) {
+          alert("Please set your identity first!");
+          return;
+        }
+
+        const voterName = currentUser.name;
 
         try {
           if (db) {
@@ -3291,6 +3320,7 @@
               await db.collection("campsite_votes").add({
                 campsite_id: campsiteId,
                 voter_name: voterName,
+                voter_email: currentUser.email,
                 timestamp: new Date(),
               });
               alert("Vote recorded!");
