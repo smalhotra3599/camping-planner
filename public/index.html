@@ -1335,8 +1335,131 @@
       <div class="container">
         <h2 class="section-title">Vote for Your Favorite Campsite 🗳️</h2>
 
+        <div style="text-align: center; margin-bottom: 30px">
+          <p style="font-size: 1.1em; margin-bottom: 20px">
+            Vote for your preferred campsite or propose a new option!
+          </p>
+          <button class="btn" onclick="openProposeCampsiteModal()">
+            ➕ Propose New Campsite
+          </button>
+        </div>
+
         <div class="campsite-grid" id="campsiteGrid">
           <!-- Campsites will be dynamically loaded -->
+        </div>
+
+        <!-- Propose Campsite Modal -->
+        <div class="modal" id="proposeCampsiteModal">
+          <div class="modal-content">
+            <h3>Propose a New Campsite 🏕️</h3>
+            <form id="proposeCampsiteForm">
+              <input
+                type="text"
+                id="campsiteName"
+                placeholder="Campsite Name"
+                required
+                style="margin-bottom: 15px"
+              />
+
+              <div style="margin-bottom: 15px">
+                <label
+                  style="display: block; margin-bottom: 5px; font-weight: bold"
+                  >Emoji (optional):</label
+                >
+                <input
+                  type="text"
+                  id="campsiteEmoji"
+                  placeholder="🏔️"
+                  maxlength="2"
+                  style="width: 80px"
+                />
+              </div>
+
+              <div style="margin-bottom: 15px">
+                <label
+                  style="display: block; margin-bottom: 5px; font-weight: bold"
+                  >Features (one per line):</label
+                >
+                <textarea
+                  id="campsiteFeatures"
+                  placeholder="Lake access&#10;Hot showers&#10;Fire pits&#10;Hiking trails"
+                  rows="4"
+                  required
+                ></textarea>
+              </div>
+
+              <div style="display: flex; gap: 15px; margin-bottom: 15px">
+                <div style="flex: 1">
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 5px;
+                      font-weight: bold;
+                    "
+                    >Distance:</label
+                  >
+                  <input
+                    type="text"
+                    id="campsiteDistance"
+                    placeholder="45 miles"
+                    required
+                  />
+                </div>
+                <div style="flex: 1">
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 5px;
+                      font-weight: bold;
+                    "
+                    >Cost:</label
+                  >
+                  <input
+                    type="text"
+                    id="campsiteCost"
+                    placeholder="$25/night"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div style="margin-bottom: 20px">
+                <label
+                  style="display: block; margin-bottom: 5px; font-weight: bold"
+                  >Additional Info (optional):</label
+                >
+                <textarea
+                  id="campsiteInfo"
+                  placeholder="Any additional details, website links, or special notes..."
+                  rows="3"
+                ></textarea>
+              </div>
+
+              <div style="margin-bottom: 20px">
+                <label
+                  style="display: block; margin-bottom: 5px; font-weight: bold"
+                  >Your Name:</label
+                >
+                <input
+                  type="text"
+                  id="campsiteProposer"
+                  placeholder="Who's proposing this campsite?"
+                  required
+                />
+              </div>
+
+              <div class="modal-buttons">
+                <button type="submit" class="btn">Propose Campsite</button>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  onclick="closeProposeCampsiteModal()"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </section>
