@@ -803,6 +803,22 @@
         min-width: 200px;
       }
 
+      .user-form select {
+        flex: 1;
+        min-width: 200px;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+        background: white;
+      }
+
+      .user-form select:focus {
+        outline: none;
+        border-color: var(--sage-green);
+      }
+
       .current-user {
         background: var(--sage-green);
         color: white;
@@ -895,13 +911,13 @@
       }
 
       .weekend-card.available {
-        background: var(--sage-green);
-        color: white;
-        border-color: var(--sage-green);
+        background: var(--sage-green) !important;
+        color: white !important;
+        border-color: var(--sage-green) !important;
       }
 
       .weekend-card.available:hover {
-        background: var(--forest-green);
+        background: var(--forest-green) !important;
       }
 
       .weekend-card.heat-1 {
@@ -1038,7 +1054,8 @@
           flex-direction: column;
         }
 
-        .user-form input {
+        .user-form input,
+        .user-form select {
           min-width: 100%;
         }
 
@@ -1211,18 +1228,11 @@
             <div class="user-input-section">
               <h3>Who are you? 👤</h3>
               <div class="user-form">
-                <input
-                  type="text"
-                  id="availabilityName"
-                  placeholder="Your name"
-                  required
-                />
-                <input
-                  type="email"
-                  id="availabilityEmail"
-                  placeholder="Your email"
-                  required
-                />
+                <select id="availabilityUserSelect" required>
+                  <option value="">
+                    Select your name from the RSVP list...
+                  </option>
+                </select>
                 <button type="button" id="setUserBtn" class="btn">
                   Set Identity
                 </button>
@@ -1581,6 +1591,8 @@
       function displayRSVPs(rsvps) {
         updateSummaryStats(rsvps);
         displayRSVPTable(rsvps);
+        // Update the availability user dropdown when RSVP list changes
+        populateUserDropdown();
       }
 
       function updateSummaryStats(rsvps) {
@@ -2127,21 +2139,38 @@
 
         setUserBtn.addEventListener("click", setCurrentUser);
         changeUserBtn.addEventListener("click", changeCurrentUser);
+
+        // Populate user dropdown when RSVPs change
+        populateUserDropdown();
+      }
+
+      async function populateUserDropdown() {
+        const select = document.getElementById("availabilityUserSelect");
+        const rsvps = await getRSVPs();
+
+        // Clear existing options except the first one
+        select.innerHTML =
+          '<option value="">Select your name from the RSVP list...</option>';
+
+        // Add each RSVP person as an option
+        rsvps.forEach((rsvp) => {
+          const option = document.createElement("option");
+          option.value = JSON.stringify({ name: rsvp.name, email: rsvp.email });
+          option.textContent = rsvp.name;
+          select.appendChild(option);
+        });
       }
 
       function setCurrentUser() {
-        const name = document.getElementById("availabilityName").value.trim();
-        const email = document
-          .getElementById("availabilityEmail")
-          .value.trim()
-          .toLowerCase();
+        const select = document.getElementById("availabilityUserSelect");
+        const selectedValue = select.value;
 
-        if (!name || !email) {
-          alert("Please enter both name and email");
+        if (!selectedValue) {
+          alert("Please select your name from the list");
           return;
         }
 
-        currentUser = { name, email };
+        currentUser = JSON.parse(selectedValue);
         localStorage.setItem("campingUser", JSON.stringify(currentUser));
         showCurrentUser();
         updateWeekendGridForUser();
@@ -2151,8 +2180,7 @@
         currentUser = null;
         localStorage.removeItem("campingUser");
         document.getElementById("currentUser").style.display = "none";
-        document.getElementById("availabilityName").value = "";
-        document.getElementById("availabilityEmail").value = "";
+        document.getElementById("availabilityUserSelect").value = "";
         document.querySelector(".user-input-section").style.display = "block";
         updateWeekendGridForUser();
       }
@@ -2433,9 +2461,6 @@
 
         // Update popular weekends
         updatePopularWeekends(weekendCounts, weekendParticipants);
-
-        // Update summary statistics
-        updateAvailabilitySummary(availabilities, weekendCounts);
 
         // Update current user's selections
         if (currentUser) {
