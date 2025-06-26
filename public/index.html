@@ -9,6 +9,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+
     <style>
       * {
         margin: 0;
@@ -1298,8 +1301,8 @@
                 color: var(--dark-text);
               "
             >
-              Select your identity to participate in date coordination and other
-              features
+              Select your identity to participate in date coordination and camp
+              site voting
             </p>
             <div class="user-form">
               <select id="availabilityUserSelect" required>
@@ -1573,24 +1576,13 @@
     </div>
 
     <script>
-      // Firebase Configuration - Replace with your config
-      const firebaseConfig = {
-        // Replace these placeholder values with your actual Firebase config
-        // You can find these values in your Firebase project settings
-        // For security, these should be loaded from environment variables in production
-        apiKey: "YOUR_API_KEY_HERE",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID",
-        measurementId: "YOUR_MEASUREMENT_ID",
-      };
+      // Firebase Configuration - Now loaded from external file
+      // firebaseConfig is available from firebase-config.js
 
       // Initialize Firebase
       let db;
       try {
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(window.firebaseConfig);
         db = firebase.firestore();
 
         // Enable offline persistence
@@ -1640,18 +1632,23 @@
       const rsvpForm = document.getElementById("rsvpForm");
       const editForm = document.getElementById("editForm");
       const editModal = document.getElementById("editModal");
-      const rsvpOptions = document.querySelectorAll(".rsvp-option");
       let selectedStatus = null;
       let editingEmail = null;
 
-      // Handle RSVP option selection in modal
-      rsvpOptions.forEach((option) => {
-        option.addEventListener("click", () => {
-          rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
-          option.classList.add("selected");
-          selectedStatus = option.dataset.status;
+      // Initialize RSVP options after DOM is loaded
+      function initializeRSVPOptions() {
+        const rsvpOptions = document.querySelectorAll(".rsvp-option");
+
+        // Handle RSVP option selection in modal
+        rsvpOptions.forEach((option) => {
+          option.addEventListener("click", () => {
+            rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+            option.classList.add("selected");
+            selectedStatus = option.dataset.status;
+            console.log("Selected status:", selectedStatus); // Debug log
+          });
         });
-      });
+      }
 
       // Add new person form
       rsvpForm.addEventListener("submit", async (e) => {
@@ -1893,19 +1890,24 @@
       // Modal functions
       function openEditModal(email, name, status, comment) {
         editingEmail = email;
-        selectedStatus = status;
 
         document.getElementById("editEmail").value = email;
         document.getElementById("editingName").textContent = name;
         document.getElementById("editComment").value = comment || "";
 
-        // Select current status
+        // Reset all options first
+        const rsvpOptions = document.querySelectorAll(".rsvp-option");
         rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
+
+        // Select current status and set selectedStatus
         const currentOption = document.querySelector(
           `[data-status="${status}"]`
         );
         if (currentOption) {
           currentOption.classList.add("selected");
+          selectedStatus = status; // Make sure selectedStatus is set
+        } else {
+          selectedStatus = null; // Reset if no valid status
         }
 
         editModal.style.display = "block";
@@ -1915,6 +1917,7 @@
         editModal.style.display = "none";
         editingEmail = null;
         selectedStatus = null;
+        const rsvpOptions = document.querySelectorAll(".rsvp-option");
         rsvpOptions.forEach((opt) => opt.classList.remove("selected"));
         editForm.reset();
       }
@@ -2293,6 +2296,9 @@
 
       // Initialize everything
       document.addEventListener("DOMContentLoaded", () => {
+        // Initialize RSVP options first
+        initializeRSVPOptions();
+
         listenToRSVPs();
         displayCampsites();
         displayPackingLists();
