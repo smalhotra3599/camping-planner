@@ -3163,6 +3163,9 @@
       // Default campsite data (now empty - start with no campsites)
       const defaultCampsites = [];
 
+      // Track the campsite listener to prevent duplicates
+      let campsiteListener = null;
+
       // Get all campsites from Firebase or local storage
       async function getCampsites() {
         try {
@@ -3195,9 +3198,10 @@
           const campsites = await getCampsites();
           displayCampsitesList(campsites);
 
-          // Listen for real-time updates
-          if (db) {
-            db.collection("campsites")
+          // Only set up listener if we don't already have one
+          if (db && !campsiteListener) {
+            campsiteListener = db
+              .collection("campsites")
               .orderBy("timestamp", "desc")
               .onSnapshot((snapshot) => {
                 const updatedCampsites = [];
@@ -3572,6 +3576,17 @@
         });
       }
 
+      // Helper function to refresh campsite display without setting up new listeners
+      async function refreshCampsiteDisplay() {
+        try {
+          const campsites = await getCampsites();
+          displayCampsitesList(campsites);
+        } catch (error) {
+          console.error("Error refreshing campsites:", error);
+          displayCampsitesList([]);
+        }
+      }
+
       // Save campsite to Firebase or local storage
       async function saveCampsite(campsiteData) {
         try {
@@ -3587,7 +3602,7 @@
             localStorage.setItem("campsites", JSON.stringify(campsites));
 
             // Trigger display update
-            loadAndDisplayCampsites();
+            refreshCampsiteDisplay();
           }
         } catch (error) {
           console.error("Error saving campsite:", error);
@@ -3653,11 +3668,8 @@
 
             localStorage.setItem("campsiteVotes", JSON.stringify(votes));
 
-            // Manually update all campsites since we don't have real-time updates
-            const campsites = await getCampsites();
-            for (const campsite of campsites) {
-              loadCampsiteVotesEnhanced(campsite.id);
-            }
+            // Refresh display
+            refreshCampsiteDisplay();
           }
         } catch (error) {
           console.error("Error voting:", error);
@@ -3776,7 +3788,7 @@
             localStorage.setItem("campsiteVotes", JSON.stringify(votes));
 
             // Refresh display
-            loadAndDisplayCampsites();
+            refreshCampsiteDisplay();
           }
 
           alert("Campsite deleted successfully!");
@@ -3950,7 +3962,7 @@
               campsites[index] = { ...campsites[index], ...campsiteData };
               localStorage.setItem("campsites", JSON.stringify(campsites));
               // Trigger display update
-              loadAndDisplayCampsites();
+              refreshCampsiteDisplay();
             } else {
               throw new Error("Campsite not found in local storage");
             }
