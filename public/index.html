@@ -979,6 +979,41 @@
         font-weight: bold;
       }
 
+      /* Tooltip for showing all participants */
+      .weekend-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        white-space: nowrap;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        margin-bottom: 5px;
+      }
+
+      .weekend-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.9);
+      }
+
+      .weekend-card:hover .weekend-tooltip {
+        opacity: 1;
+        visibility: visible;
+      }
+
       .availability-summary {
         background: white;
         border-radius: 12px;
@@ -1233,17 +1268,6 @@
                     Select your name from the RSVP list...
                   </option>
                 </select>
-                <button type="button" id="setUserBtn" class="btn">
-                  Set Identity
-                </button>
-              </div>
-              <div id="currentUser" class="current-user" style="display: none">
-                <span class="user-info"
-                  >Logged in as: <strong id="currentUserName"></strong
-                ></span>
-                <button type="button" id="changeUserBtn" class="btn-small">
-                  Change User
-                </button>
               </div>
             </div>
           </div>
@@ -1263,14 +1287,6 @@
               Click on weekends you're available for camping (Friday-Sunday)
             </p>
             <div id="weekendGrid" class="weekend-grid">
-              <!-- Will be populated by JavaScript -->
-            </div>
-          </div>
-
-          <!-- Availability Summary -->
-          <div class="availability-summary">
-            <h3>📊 Weekend Availability Summary</h3>
-            <div id="availabilitySummary" class="summary-cards">
               <!-- Will be populated by JavaScript -->
             </div>
           </div>
@@ -2127,18 +2143,30 @@
 
       // User management
       function setupUserManagement() {
-        const setUserBtn = document.getElementById("setUserBtn");
-        const changeUserBtn = document.getElementById("changeUserBtn");
+        const userSelect = document.getElementById("availabilityUserSelect");
 
         // Check if user is already stored
         const storedUser = localStorage.getItem("campingUser");
         if (storedUser) {
           currentUser = JSON.parse(storedUser);
-          showCurrentUser();
+          // Set the dropdown to match the stored user
+          userSelect.value = JSON.stringify(currentUser);
         }
 
-        setUserBtn.addEventListener("click", setCurrentUser);
-        changeUserBtn.addEventListener("click", changeCurrentUser);
+        // Auto-update when dropdown changes
+        userSelect.addEventListener("change", function () {
+          const selectedValue = this.value;
+
+          if (selectedValue) {
+            currentUser = JSON.parse(selectedValue);
+            localStorage.setItem("campingUser", JSON.stringify(currentUser));
+          } else {
+            currentUser = null;
+            localStorage.removeItem("campingUser");
+          }
+
+          updateWeekendGridForUser();
+        });
 
         // Populate user dropdown when RSVPs change
         populateUserDropdown();
@@ -2147,6 +2175,7 @@
       async function populateUserDropdown() {
         const select = document.getElementById("availabilityUserSelect");
         const rsvps = await getRSVPs();
+        const currentValue = select.value;
 
         // Clear existing options except the first one
         select.innerHTML =
@@ -2159,39 +2188,30 @@
           option.textContent = rsvp.name;
           select.appendChild(option);
         });
+
+        // Restore the previous selection if it still exists
+        if (
+          currentValue &&
+          rsvps.some(
+            (rsvp) =>
+              JSON.stringify({ name: rsvp.name, email: rsvp.email }) ===
+              currentValue
+          )
+        ) {
+          select.value = currentValue;
+        }
       }
 
       function setCurrentUser() {
-        const select = document.getElementById("availabilityUserSelect");
-        const selectedValue = select.value;
-
-        if (!selectedValue) {
-          alert("Please select your name from the list");
-          return;
-        }
-
-        currentUser = JSON.parse(selectedValue);
-        localStorage.setItem("campingUser", JSON.stringify(currentUser));
-        showCurrentUser();
-        updateWeekendGridForUser();
+        // This function is no longer needed
       }
 
       function changeCurrentUser() {
-        currentUser = null;
-        localStorage.removeItem("campingUser");
-        document.getElementById("currentUser").style.display = "none";
-        document.getElementById("availabilityUserSelect").value = "";
-        document.querySelector(".user-input-section").style.display = "block";
-        updateWeekendGridForUser();
+        // This function is no longer needed
       }
 
       function showCurrentUser() {
-        if (!currentUser) return;
-
-        document.getElementById("currentUserName").textContent =
-          currentUser.name;
-        document.getElementById("currentUser").style.display = "flex";
-        document.querySelector(".user-input-section").style.display = "none";
+        // This function is no longer needed
       }
 
       // Generate weekend grid
@@ -2216,6 +2236,7 @@
               <div class="weekend-participants" id="participants-${weekend.id}">0 available</div>
               <div class="participant-preview" id="preview-${weekend.id}"></div>
               <div class="participant-count-badge" id="badge-${weekend.id}" style="display: none;">0</div>
+              <div class="weekend-tooltip" id="tooltip-${weekend.id}">No one available yet</div>
             </div>
           `;
           })
@@ -2434,6 +2455,14 @@
             previewEl.textContent = preview;
           } else {
             previewEl.textContent = "No one yet";
+          }
+
+          // Update tooltip with all participants
+          const tooltipEl = card.querySelector(".weekend-tooltip");
+          if (participants.length > 0) {
+            tooltipEl.textContent = `Available: ${participants.join(", ")}`;
+          } else {
+            tooltipEl.textContent = "No one available yet";
           }
 
           // Update count badge
