@@ -1661,7 +1661,7 @@
           .toLowerCase();
 
         if (!name || !email) {
-          alert("Please enter both name and email");
+          console.log("Please enter both name and email");
           return;
         }
 
@@ -1679,10 +1679,9 @@
           // Reset form
           rsvpForm.reset();
 
-          alert("Person added! Click on their row to set their RSVP status.");
+          console.log("Person added successfully");
         } catch (error) {
           console.error("Error adding person:", error);
-          alert("Error adding person. Please try again.");
         }
       });
 
@@ -1691,7 +1690,7 @@
         e.preventDefault();
 
         if (!selectedStatus) {
-          alert("Please select an RSVP status");
+          console.log("Please select an RSVP status");
           return;
         }
 
@@ -1740,10 +1739,9 @@
           }
 
           closeEditModal();
-          alert("RSVP updated successfully!");
+          console.log("RSVP updated successfully");
         } catch (error) {
           console.error("Error updating RSVP:", error);
-          alert("Error updating RSVP. Please try again.");
         }
       });
 
