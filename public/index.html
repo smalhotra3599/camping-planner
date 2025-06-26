@@ -205,7 +205,6 @@
         border-radius: 8px;
         font-size: 16px;
         transition: border-color 0.3s ease;
-        font-family: inherit;
       }
 
       input[type="text"]:focus,
@@ -221,20 +220,34 @@
       }
 
       .btn {
-        background: var(--sunset-orange);
+        background: var(--forest-green);
         color: white;
-        padding: 12px 30px;
         border: none;
-        border-radius: 25px;
-        font-size: 18px;
+        padding: 12px 24px;
+        border-radius: 8px;
         cursor: pointer;
+        font-size: 16px;
         transition: all 0.3s ease;
       }
 
       .btn:hover {
-        background: #e85a2a;
+        background: #244a35;
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+      }
+
+      .btn-small {
+        background: var(--sage-green);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-small:hover {
+        background: #7a9968;
       }
 
       .attendees-list {
@@ -758,6 +771,289 @@
       .connection-status.offline {
         background: var(--sunset-orange);
       }
+
+      /* Availability System Styles */
+      .availability-section {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .user-selector {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .user-input-section h3 {
+        color: var(--forest-green);
+        margin-bottom: 20px;
+      }
+
+      .user-form {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .user-form input {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .current-user {
+        background: var(--sage-green);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+      }
+
+      .popular-weekends {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .popular-weekends h3 {
+        color: var(--sunset-orange);
+        margin-bottom: 20px;
+      }
+
+      .popular-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+      }
+
+      .popular-weekend-card {
+        background: linear-gradient(135deg, var(--sunset-orange), #ff8c65);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(255, 107, 53, 0.3);
+      }
+
+      .popular-weekend-card .weekend-dates {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .popular-weekend-card .participant-count {
+        font-size: 0.9em;
+        opacity: 0.9;
+      }
+
+      .weekend-grid-container {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .weekend-grid-container h3 {
+        color: var(--forest-green);
+        margin-bottom: 15px;
+      }
+
+      .grid-instructions {
+        color: #666;
+        margin-bottom: 25px;
+        font-style: italic;
+      }
+
+      .weekend-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .weekend-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        background: white;
+      }
+
+      .weekend-card:hover {
+        border-color: var(--sage-green);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .weekend-card.available {
+        background: var(--sage-green);
+        color: white;
+        border-color: var(--sage-green);
+      }
+
+      .weekend-card.available:hover {
+        background: var(--forest-green);
+      }
+
+      .weekend-card.heat-1 {
+        background: linear-gradient(135deg, #ffebeb, #ffcccc);
+        border-color: #ff9999;
+      }
+
+      .weekend-card.heat-2 {
+        background: linear-gradient(135deg, #ffe0b3, #ffcc80);
+        border-color: #ff9933;
+      }
+
+      .weekend-card.heat-3 {
+        background: linear-gradient(135deg, #d4e6b3, #a8cc80);
+        border-color: #7db33c;
+      }
+
+      .weekend-card.heat-4 {
+        background: linear-gradient(135deg, #b3e6cc, #80cc99);
+        border-color: #4d9966;
+      }
+
+      .weekend-card.heat-5 {
+        background: linear-gradient(135deg, #80e6b3, #4dcc80);
+        border-color: #26804d;
+      }
+
+      .weekend-dates {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 8px;
+      }
+
+      .weekend-participants {
+        font-size: 0.9em;
+        opacity: 0.8;
+        margin-bottom: 10px;
+      }
+
+      .participant-preview {
+        font-size: 0.8em;
+        opacity: 0.7;
+        min-height: 20px;
+      }
+
+      .participant-count-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--sunset-orange);
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .availability-summary {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .availability-summary h3 {
+        color: var(--forest-green);
+        margin-bottom: 20px;
+      }
+
+      .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+
+      .summary-card {
+        background: linear-gradient(
+          135deg,
+          var(--sage-green),
+          var(--forest-green)
+        );
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(45, 90, 61, 0.3);
+      }
+
+      .summary-card h4 {
+        margin-bottom: 10px;
+        font-size: 1.1em;
+      }
+
+      .summary-card .summary-value {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .summary-card .summary-details {
+        font-size: 0.9em;
+        opacity: 0.9;
+      }
+
+      .participant-details {
+        margin-top: 15px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-size: 0.9em;
+      }
+
+      .participant-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .participant-tag {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .user-form {
+          flex-direction: column;
+        }
+
+        .user-form input {
+          min-width: 100%;
+        }
+
+        .weekend-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .popular-list {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -904,26 +1200,69 @@
       <div class="container">
         <h2 class="section-title">Find the Perfect Dates 📅</h2>
 
-        <div class="date-section">
-          <p style="font-size: 1.2em; margin-bottom: 30px">
-            Let's find dates that work for everyone!
+        <div class="availability-section">
+          <p style="font-size: 1.2em; margin-bottom: 30px; text-align: center">
+            Select your available weekends for camping between July 4th and
+            Labor Day!
           </p>
 
-          <div class="calendly-placeholder">
-            <h3>📆 Calendly Widget</h3>
-            <p>Schedule coordination tool will be embedded here</p>
+          <!-- User Selection -->
+          <div class="user-selector">
+            <div class="user-input-section">
+              <h3>Who are you? 👤</h3>
+              <div class="user-form">
+                <input
+                  type="text"
+                  id="availabilityName"
+                  placeholder="Your name"
+                  required
+                />
+                <input
+                  type="email"
+                  id="availabilityEmail"
+                  placeholder="Your email"
+                  required
+                />
+                <button type="button" id="setUserBtn" class="btn">
+                  Set Identity
+                </button>
+              </div>
+              <div id="currentUser" class="current-user" style="display: none">
+                <span class="user-info"
+                  >Logged in as: <strong id="currentUserName"></strong
+                ></span>
+                <button type="button" id="changeUserBtn" class="btn-small">
+                  Change User
+                </button>
+              </div>
+            </div>
           </div>
 
-          <button
-            class="btn"
-            onclick="window.open('https://calendly.com', '_blank')"
-          >
-            Check Available Dates on Calendly
-          </button>
+          <!-- Popular Weekends Summary -->
+          <div class="popular-weekends">
+            <h3>🔥 Most Popular Weekends</h3>
+            <div id="popularWeekendsList" class="popular-list">
+              <!-- Will be populated by JavaScript -->
+            </div>
+          </div>
 
-          <div style="margin-top: 30px">
-            <h3>Proposed Dates:</h3>
-            <p>June 15-17 • July 6-8 • July 20-22</p>
+          <!-- Weekend Grid -->
+          <div class="weekend-grid-container">
+            <h3>Select Your Available Weekends 🗓️</h3>
+            <p class="grid-instructions">
+              Click on weekends you're available for camping (Friday-Sunday)
+            </p>
+            <div id="weekendGrid" class="weekend-grid">
+              <!-- Will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Availability Summary -->
+          <div class="availability-summary">
+            <h3>📊 Weekend Availability Summary</h3>
+            <div id="availabilitySummary" class="summary-cards">
+              <!-- Will be populated by JavaScript -->
+            </div>
           </div>
         </div>
       </div>
@@ -1697,6 +2036,7 @@
         listenToRSVPs();
         displayCampsites();
         displayPackingLists();
+        initializeAvailabilitySystem();
 
         // Check initial connection status
         updateConnectionStatus(navigator.onLine);
@@ -1712,6 +2052,502 @@
           });
         });
       });
+
+      // AVAILABILITY SYSTEM
+      let currentUser = null;
+      let allAvailabilities = [];
+
+      // Generate weekend dates from July 4th to Labor Day 2024
+      function generateWeekendDates() {
+        const weekends = [];
+        const year = new Date().getFullYear();
+
+        // Start from July 4th weekend (find the Friday before or on July 4th)
+        let july4th = new Date(year, 6, 4); // July 4th
+        let startFriday = new Date(july4th);
+
+        // Find the Friday of July 4th week
+        while (startFriday.getDay() !== 5) {
+          // 5 = Friday
+          startFriday.setDate(startFriday.getDate() - 1);
+        }
+
+        // Labor Day is first Monday in September
+        let laborDay = new Date(year, 8, 1); // September 1st
+        while (laborDay.getDay() !== 1) {
+          // 1 = Monday
+          laborDay.setDate(laborDay.getDate() + 1);
+        }
+
+        // Generate all weekends from start Friday to Labor Day
+        let currentFriday = new Date(startFriday);
+
+        while (currentFriday <= laborDay) {
+          const friday = new Date(currentFriday);
+          const saturday = new Date(currentFriday);
+          saturday.setDate(saturday.getDate() + 1);
+          const sunday = new Date(currentFriday);
+          sunday.setDate(sunday.getDate() + 2);
+
+          weekends.push({
+            id: `weekend-${friday.getTime()}`,
+            friday,
+            saturday,
+            sunday,
+            startDate: friday,
+            endDate: sunday,
+          });
+
+          // Move to next Friday
+          currentFriday.setDate(currentFriday.getDate() + 7);
+        }
+
+        return weekends;
+      }
+
+      // Initialize availability system
+      function initializeAvailabilitySystem() {
+        setupUserManagement();
+        generateWeekendGrid();
+        listenToAvailabilities();
+        updateAvailabilityDisplay();
+      }
+
+      // User management
+      function setupUserManagement() {
+        const setUserBtn = document.getElementById("setUserBtn");
+        const changeUserBtn = document.getElementById("changeUserBtn");
+
+        // Check if user is already stored
+        const storedUser = localStorage.getItem("campingUser");
+        if (storedUser) {
+          currentUser = JSON.parse(storedUser);
+          showCurrentUser();
+        }
+
+        setUserBtn.addEventListener("click", setCurrentUser);
+        changeUserBtn.addEventListener("click", changeCurrentUser);
+      }
+
+      function setCurrentUser() {
+        const name = document.getElementById("availabilityName").value.trim();
+        const email = document
+          .getElementById("availabilityEmail")
+          .value.trim()
+          .toLowerCase();
+
+        if (!name || !email) {
+          alert("Please enter both name and email");
+          return;
+        }
+
+        currentUser = { name, email };
+        localStorage.setItem("campingUser", JSON.stringify(currentUser));
+        showCurrentUser();
+        updateWeekendGridForUser();
+      }
+
+      function changeCurrentUser() {
+        currentUser = null;
+        localStorage.removeItem("campingUser");
+        document.getElementById("currentUser").style.display = "none";
+        document.getElementById("availabilityName").value = "";
+        document.getElementById("availabilityEmail").value = "";
+        document.querySelector(".user-input-section").style.display = "block";
+        updateWeekendGridForUser();
+      }
+
+      function showCurrentUser() {
+        if (!currentUser) return;
+
+        document.getElementById("currentUserName").textContent =
+          currentUser.name;
+        document.getElementById("currentUser").style.display = "flex";
+        document.querySelector(".user-input-section").style.display = "none";
+      }
+
+      // Generate weekend grid
+      function generateWeekendGrid() {
+        const weekends = generateWeekendDates();
+        const grid = document.getElementById("weekendGrid");
+
+        grid.innerHTML = weekends
+          .map((weekend) => {
+            const fridayStr = weekend.friday.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
+            const sundayStr = weekend.sunday.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
+
+            return `
+            <div class="weekend-card" data-weekend-id="${weekend.id}" onclick="toggleWeekendAvailability('${weekend.id}')">
+              <div class="weekend-dates">${fridayStr} - ${sundayStr}</div>
+              <div class="weekend-participants" id="participants-${weekend.id}">0 available</div>
+              <div class="participant-preview" id="preview-${weekend.id}"></div>
+              <div class="participant-count-badge" id="badge-${weekend.id}" style="display: none;">0</div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      // Toggle weekend availability
+      async function toggleWeekendAvailability(weekendId) {
+        if (!currentUser) {
+          alert("Please set your identity first!");
+          return;
+        }
+
+        try {
+          // Get current user's availabilities
+          const userAvailabilities = await getUserAvailabilities(
+            currentUser.email
+          );
+          const isCurrentlyAvailable = userAvailabilities.includes(weekendId);
+
+          let updatedAvailabilities;
+          if (isCurrentlyAvailable) {
+            // Remove availability
+            updatedAvailabilities = userAvailabilities.filter(
+              (id) => id !== weekendId
+            );
+          } else {
+            // Add availability
+            updatedAvailabilities = [...userAvailabilities, weekendId];
+          }
+
+          // Save to database
+          await saveUserAvailabilities(currentUser, updatedAvailabilities);
+
+          // Update UI
+          updateWeekendCardDisplay(weekendId, !isCurrentlyAvailable);
+        } catch (error) {
+          console.error("Error toggling availability:", error);
+          alert("Error updating availability. Please try again.");
+        }
+      }
+
+      // Get user's current availabilities
+      async function getUserAvailabilities(email) {
+        try {
+          if (db) {
+            const snapshot = await db
+              .collection("weekend_availabilities")
+              .where("email", "==", email)
+              .get();
+
+            if (!snapshot.empty) {
+              return snapshot.docs[0].data().availableWeekends || [];
+            }
+          } else {
+            // Local storage fallback
+            const stored = localStorage.getItem(`availabilities_${email}`);
+            return stored ? JSON.parse(stored) : [];
+          }
+          return [];
+        } catch (error) {
+          console.error("Error getting availabilities:", error);
+          return [];
+        }
+      }
+
+      // Save user availabilities
+      async function saveUserAvailabilities(user, availabilities) {
+        try {
+          const data = {
+            name: user.name,
+            email: user.email,
+            availableWeekends: availabilities,
+            timestamp: new Date(),
+          };
+
+          if (db) {
+            const existingQuery = await db
+              .collection("weekend_availabilities")
+              .where("email", "==", user.email)
+              .get();
+
+            if (!existingQuery.empty) {
+              await existingQuery.docs[0].ref.update(data);
+            } else {
+              await db.collection("weekend_availabilities").add(data);
+            }
+          } else {
+            // Local storage fallback
+            localStorage.setItem(
+              `availabilities_${user.email}`,
+              JSON.stringify(availabilities)
+            );
+            const allUsers = JSON.parse(
+              localStorage.getItem("allAvailabilityUsers") || "[]"
+            );
+            const existingUserIndex = allUsers.findIndex(
+              (u) => u.email === user.email
+            );
+
+            if (existingUserIndex >= 0) {
+              allUsers[existingUserIndex] = data;
+            } else {
+              allUsers.push(data);
+            }
+
+            localStorage.setItem(
+              "allAvailabilityUsers",
+              JSON.stringify(allUsers)
+            );
+            updateAvailabilityDisplay();
+          }
+        } catch (error) {
+          console.error("Error saving availabilities:", error);
+          throw error;
+        }
+      }
+
+      // Listen to real-time availability updates
+      function listenToAvailabilities() {
+        if (db) {
+          db.collection("weekend_availabilities").onSnapshot((snapshot) => {
+            allAvailabilities = [];
+            snapshot.forEach((doc) => {
+              allAvailabilities.push({ id: doc.id, ...doc.data() });
+            });
+            updateAvailabilityDisplay();
+          });
+        } else {
+          // For local storage, update periodically
+          updateAvailabilityDisplay();
+        }
+      }
+
+      // Update weekend card display for current user
+      async function updateWeekendCardDisplay(weekendId, isAvailable) {
+        const card = document.querySelector(`[data-weekend-id="${weekendId}"]`);
+        if (!card) return;
+
+        if (isAvailable) {
+          card.classList.add("available");
+        } else {
+          card.classList.remove("available");
+        }
+      }
+
+      // Update weekend grid for current user
+      async function updateWeekendGridForUser() {
+        if (!currentUser) {
+          // Clear all user-specific styling
+          document.querySelectorAll(".weekend-card").forEach((card) => {
+            card.classList.remove("available");
+          });
+          return;
+        }
+
+        const userAvailabilities = await getUserAvailabilities(
+          currentUser.email
+        );
+
+        document.querySelectorAll(".weekend-card").forEach((card) => {
+          const weekendId = card.dataset.weekendId;
+          if (userAvailabilities.includes(weekendId)) {
+            card.classList.add("available");
+          } else {
+            card.classList.remove("available");
+          }
+        });
+      }
+
+      // Update all availability displays (heat map, counts, summaries)
+      async function updateAvailabilityDisplay() {
+        // Get all availabilities
+        let availabilities = allAvailabilities;
+
+        if (!db) {
+          // Local storage fallback
+          availabilities = JSON.parse(
+            localStorage.getItem("allAvailabilityUsers") || "[]"
+          );
+        }
+
+        const weekendCounts = {};
+        const weekendParticipants = {};
+
+        // Count participants for each weekend
+        availabilities.forEach((user) => {
+          (user.availableWeekends || []).forEach((weekendId) => {
+            weekendCounts[weekendId] = (weekendCounts[weekendId] || 0) + 1;
+            if (!weekendParticipants[weekendId]) {
+              weekendParticipants[weekendId] = [];
+            }
+            weekendParticipants[weekendId].push(user.name);
+          });
+        });
+
+        // Update weekend cards with heat map and participant info
+        document.querySelectorAll(".weekend-card").forEach((card) => {
+          const weekendId = card.dataset.weekendId;
+          const count = weekendCounts[weekendId] || 0;
+          const participants = weekendParticipants[weekendId] || [];
+
+          // Update participant count
+          const participantsEl = card.querySelector(".weekend-participants");
+          participantsEl.textContent = `${count} available`;
+
+          // Update participant preview
+          const previewEl = card.querySelector(".participant-preview");
+          if (participants.length > 0) {
+            const preview =
+              participants.length <= 2
+                ? participants.join(", ")
+                : `${participants.slice(0, 2).join(", ")} +${
+                    participants.length - 2
+                  } more`;
+            previewEl.textContent = preview;
+          } else {
+            previewEl.textContent = "No one yet";
+          }
+
+          // Update count badge
+          const badgeEl = card.querySelector(".participant-count-badge");
+          if (count > 0) {
+            badgeEl.textContent = count;
+            badgeEl.style.display = "flex";
+          } else {
+            badgeEl.style.display = "none";
+          }
+
+          // Apply heat map styling
+          card.classList.remove(
+            "heat-1",
+            "heat-2",
+            "heat-3",
+            "heat-4",
+            "heat-5"
+          );
+          if (count > 0 && !card.classList.contains("available")) {
+            const heatLevel = Math.min(5, Math.max(1, count));
+            card.classList.add(`heat-${heatLevel}`);
+          }
+        });
+
+        // Update popular weekends
+        updatePopularWeekends(weekendCounts, weekendParticipants);
+
+        // Update summary statistics
+        updateAvailabilitySummary(availabilities, weekendCounts);
+
+        // Update current user's selections
+        if (currentUser) {
+          updateWeekendGridForUser();
+        }
+      }
+
+      // Update popular weekends section
+      function updatePopularWeekends(weekendCounts, weekendParticipants) {
+        const popularList = document.getElementById("popularWeekendsList");
+
+        // Get top 3 most popular weekends
+        const sortedWeekends = Object.entries(weekendCounts)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 3);
+
+        if (sortedWeekends.length === 0) {
+          popularList.innerHTML =
+            '<p style="text-align: center; color: #666;">No availabilities submitted yet</p>';
+          return;
+        }
+
+        const weekends = generateWeekendDates();
+
+        popularList.innerHTML = sortedWeekends
+          .map(([weekendId, count]) => {
+            const weekend = weekends.find((w) => w.id === weekendId);
+            if (!weekend) return "";
+
+            const fridayStr = weekend.friday.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
+            const sundayStr = weekend.sunday.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
+
+            return `
+            <div class="popular-weekend-card">
+              <div class="weekend-dates">${fridayStr} - ${sundayStr}</div>
+              <div class="participant-count">${count} people available</div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      // Update availability summary
+      function updateAvailabilitySummary(availabilities, weekendCounts) {
+        const summaryEl = document.getElementById("availabilitySummary");
+
+        const totalParticipants = availabilities.length;
+        const totalWeekends = Object.keys(weekendCounts).length;
+        const avgAvailability =
+          totalParticipants > 0
+            ? (
+                Object.values(weekendCounts).reduce((a, b) => a + b, 0) /
+                  Object.values(weekendCounts).length || 0
+              ).toFixed(1)
+            : 0;
+
+        // Find best weekend
+        const bestWeekend = Object.entries(weekendCounts).sort(
+          ([, a], [, b]) => b - a
+        )[0];
+
+        const weekends = generateWeekendDates();
+        let bestWeekendInfo = "None yet";
+        if (bestWeekend) {
+          const weekend = weekends.find((w) => w.id === bestWeekend[0]);
+          if (weekend) {
+            const fridayStr = weekend.friday.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
+            const sundayStr = weekend.sunday.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
+            bestWeekendInfo = `${fridayStr} - ${sundayStr}`;
+          }
+        }
+
+        summaryEl.innerHTML = `
+          <div class="summary-card">
+            <h4>Total Participants</h4>
+            <div class="summary-value">${totalParticipants}</div>
+            <div class="summary-details">People who submitted availability</div>
+          </div>
+          
+          <div class="summary-card">
+            <h4>Weekends with Interest</h4>
+            <div class="summary-value">${totalWeekends}</div>
+            <div class="summary-details">Out of ${
+              generateWeekendDates().length
+            } total weekends</div>
+          </div>
+          
+          <div class="summary-card">
+            <h4>Best Weekend</h4>
+            <div class="summary-value">${bestWeekend ? bestWeekend[1] : 0}</div>
+            <div class="summary-details">People available: ${bestWeekendInfo}</div>
+          </div>
+          
+          <div class="summary-card">
+            <h4>Average Interest</h4>
+            <div class="summary-value">${avgAvailability}</div>
+            <div class="summary-details">People per weekend</div>
+          </div>
+        `;
+      }
     </script>
   </body>
 </html>
